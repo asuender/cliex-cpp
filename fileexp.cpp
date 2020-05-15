@@ -9,6 +9,11 @@
 #include <menu.h>
 #include <ncurses.h>
 
+#define MAIN_HEIGHT LINES-1
+#define MAIN_WIDTH COLS/2+15
+#define SUB_HEIGHT LINES-5
+#define SUB_WIDTH COLS/2+4
+
 namespace fs = std::experimental::filesystem;
 
 const struct passwd *pw = getpwuid(getuid());
@@ -30,15 +35,16 @@ void get_dir_content (const char* s, std::vector<std::string> &v) {
     });
 }
 
-WINDOW* create_win(int height, int width, int starty, int startx) {
+WINDOW* create_win() {
     WINDOW *win;
-    win = newwin(LINES-1, COLS/2+15, 1, 1);
+    win = newwin(MAIN_HEIGHT, MAIN_WIDTH, 1, 1);
     box(win, 0, 0);
     keypad(win, 1);
     return win;
 }
 
 MENU* create_menu_and_items(WINDOW* win, std::vector<std::string> &choices, std::vector<ITEM*> &items, fs::path current_dir) {
+    size_t longst_entry = 0;
     for (auto &e : choices) {
         items.emplace_back(new_item(e.c_str(), ""));
     }
@@ -47,9 +53,18 @@ MENU* create_menu_and_items(WINDOW* win, std::vector<std::string> &choices, std:
     MENU *menu = new_menu(const_cast<ITEM**>(items.data()));
 
     set_menu_win (menu, win);
-    set_menu_sub (menu, derwin(win, LINES-5, COLS/2+4, 3, 3));
-    set_menu_format(menu, LINES-5, 2);
+    set_menu_sub (menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
+
+    for (auto &s : choices)
+        if (s.length() > longst_entry) longst_entry = s.length();
+
+    if (longst_entry >= SUB_WIDTH)
+        set_menu_format(menu, LINES-5, 1);
+    else
+        set_menu_format(menu, LINES-5, 2);
     set_menu_mark(menu, "");
+
+
 
     mvwaddstr(win, 1, 2, "***** CLI File Explorer *****");
     move(LINES-3, COLS/2+17); clrtoeol();
@@ -88,7 +103,7 @@ int main(int argc, char const *argv[])
     nl();
     keypad(stdscr, 1);
 
-    main = create_win(LINES-1, COLS/+15, 1, 1);
+    main = create_win();
     menu = create_menu_and_items(main, choices, items, current_dir);
 
     refresh();
@@ -121,7 +136,7 @@ int main(int argc, char const *argv[])
                 } else
                     current_dir = current_dir / choices.at(index);
                 auto status = fs::status(current_dir);
-                
+
                 if (fs::is_directory(status)) {
                     choices.clear();
 
@@ -130,7 +145,7 @@ int main(int argc, char const *argv[])
                     delete_and_clear(main, menu, items);
 
                     get_dir_content(current_dir.string().c_str(), choices);
-                    main = create_win(LINES-1, COLS/+15, 1, 1);
+                    main = create_win();
                     menu = create_menu_and_items(main, choices, items, current_dir);
                     refresh();
                 }
