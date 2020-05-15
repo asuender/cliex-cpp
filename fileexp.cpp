@@ -19,12 +19,12 @@ namespace fs = std::experimental::filesystem;
 const struct passwd *pw = getpwuid(getuid());
 const char* home_dir = pw->pw_dir;
 
-void get_dir_content (const char* s, std::vector<std::string> &v) {
+void get_dir_content (const char* s, std::vector<std::string> &v, fs::path current_dir) {
     fs::path path(s);
     fs::directory_iterator beg (path);
     fs::directory_iterator end;
-    v.emplace_back(".");
-    v.emplace_back("..");
+    if (current_dir != "/")
+        v.emplace_back("..");
     std::transform(beg, end, std::back_inserter(v), [](const fs::directory_entry &e)
         -> std::string {
         auto p = e.path();
@@ -86,7 +86,7 @@ int main(int argc, char const *argv[])
 {
     fs::path current_dir(home_dir);
     std::vector<std::string> choices {};
-    get_dir_content(current_dir.string().c_str(), choices);
+    get_dir_content(current_dir.string().c_str(), choices, current_dir);
     std::vector<ITEM*> items;
     WINDOW *main;
     MENU *menu;
@@ -144,7 +144,7 @@ int main(int argc, char const *argv[])
                     items.clear();
                     delete_and_clear(main, menu, items);
 
-                    get_dir_content(current_dir.string().c_str(), choices);
+                    get_dir_content(current_dir.string().c_str(), choices, current_dir);
                     main = create_win();
                     menu = create_menu_and_items(main, choices, items, current_dir);
                     refresh();
