@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iterator>
 #include <algorithm>
 #include <experimental/filesystem>
 #include <unistd.h>
@@ -14,12 +15,45 @@
 #define SUB_HEIGHT LINES-5
 #define SUB_WIDTH COLS/2+4
 
+#define INDEX_OPT_HIDDEN_FILES 0
+
 namespace fs = std::experimental::filesystem;
 
 const struct passwd *pw = getpwuid(getuid());
 const char* home_dir = pw->pw_dir;
 
-void get_dir_content (const char* s, std::vector<std::string> &v, fs::path current_dir) {
+std::string trim(std::string const &source, char const *delims = " \t\r\n") {
+    std::string result(source);
+    std::string::size_type index = result.find_last_not_of(delims);
+    if (index != std::string::npos)
+        result.erase(++index);
+
+    index = result.find_first_not_of(delims);
+    if (index != std::string::npos)
+        result.erase(0, index);
+    else
+        result.erase();
+    return result;
+}
+
+std::vector<std::string> parse_argv(int argc, char const *argv[]) {
+    std::vector<std::string> args(argv, argv+argc);
+    std::vector<std::string> opts (10);
+    int pos_equal;
+    std::string opt, value;
+    for (auto &a : args) {
+        pos_equal = a.find("=");
+        if (pos_equal != a.npos)  {
+            opt = trim(a.substr(0, pos_equal));
+            value = trim(a.substr(pos_equal+1));
+            if (opt == "show_hidden")
+                opts[INDEX_OPT_HIDDEN_FILES] = value;
+        }
+    }
+    return opts;
+}
+
+void get_dir_content (const char* s, std::vector<std::string> &v, fs::path current_dir, std::vector<std::string> &opts) {
     fs::path path(s);
     fs::directory_iterator beg (path);
     fs::directory_iterator end;
@@ -33,6 +67,11 @@ void get_dir_content (const char* s, std::vector<std::string> &v, fs::path curre
         if (fs::is_directory(status)) { s += "/"; }
         return s;
     });
+    if (opts[INDEX_OPT_HIDDEN_FILES] == "false") {
+        v.erase(std::remove_if(v.begin(), v.end(), [](const std::string &s) {
+            return s[0] == '.' and s[1] != '.';
+        }), v.end());
+    }
 }
 
 WINDOW* create_win() {
@@ -84,9 +123,10 @@ void delete_and_clear(WINDOW* win, MENU* menu, std::vector<ITEM*> &items) {
 
 int main(int argc, char const *argv[])
 {
+    auto opts = parse_argv(argc, argv);
     fs::path current_dir(home_dir);
     std::vector<std::string> choices {};
-    get_dir_content(current_dir.string().c_str(), choices, current_dir);
+    get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
     std::vector<ITEM*> items;
     WINDOW *main;
     MENU *menu;
@@ -144,7 +184,7 @@ int main(int argc, char const *argv[])
                     items.clear();
                     delete_and_clear(main, menu, items);
 
-                    get_dir_content(current_dir.string().c_str(), choices, current_dir);
+                    get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
                     main = create_win();
                     menu = create_menu_and_items(main, choices, items, current_dir);
                     refresh();
