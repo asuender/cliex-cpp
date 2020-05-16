@@ -53,84 +53,88 @@ std::vector<std::string> parse_argv(int argc, char const *argv[]) {
     return opts;
 }
 
-void get_dir_content (
-    const char* s, std::vector<std::string> &v,
-    fs::path current_dir,
-    std::vector<std::string> &opts)
+namespace cliex {
 
-{
-    fs::path path(s);
-    fs::directory_iterator beg (path);
-    fs::directory_iterator end;
+    void get_dir_content (
+        const char* s, std::vector<std::string> &v,
+        fs::path current_dir,
+        std::vector<std::string> &opts)
 
-    if (current_dir != ROOT_DIR)
-        v.emplace_back("..");
-    std::transform(beg, end, std::back_inserter(v), [](const fs::directory_entry &e)
-        -> std::string {
-        auto p = e.path();
-        auto status = fs::status(p);
-        std::string s = p.filename().string();
-        if (fs::is_directory(status)) { s += "/"; }
-        return s;
-    });
+    {
+        fs::path path(s);
+        fs::directory_iterator beg (path);
+        fs::directory_iterator end;
 
-    if (opts[INDEX_OPT_HIDDEN_FILES] == "false") {
-        v.erase(std::remove_if(v.begin(), v.end(), [](const std::string &s) {
-            return s[0] == '.' and s[1] != '.';
-        }), v.end());
+        if (current_dir != ROOT_DIR)
+            v.emplace_back("..");
+        std::transform(beg, end, std::back_inserter(v), [](const fs::directory_entry &e)
+            -> std::string {
+            auto p = e.path();
+            auto status = fs::status(p);
+            std::string s = p.filename().string();
+            if (fs::is_directory(status)) { s += "/"; }
+            return s;
+        });
+
+        if (opts[INDEX_OPT_HIDDEN_FILES] == "false") {
+            v.erase(std::remove_if(v.begin(), v.end(), [](const std::string &s) {
+                return s[0] == '.' and s[1] != '.';
+            }), v.end());
+        }
     }
-}
 
-WINDOW* create_win(int height, int width, int starty, int startx) {
-    WINDOW *win;
-    win = newwin(height, width, starty, startx);
-    box(win, 0, 0);
-    keypad(win, 1);
-    return win;
-}
-
-MENU* create_menu_and_items(
-    WINDOW* win, std::vector<std::string> &choices,
-    std::vector<ITEM*> &items, 
-    fs::path current_dir)
-
-{
-    std::string current_dir_s = current_dir.string();
-
-    for (auto &e : choices) {
-        items.emplace_back(new_item(e.c_str(), ""));
+    WINDOW* create_win(int height, int width, int starty, int startx) {
+        WINDOW *win;
+        win = newwin(height, width, starty, startx);
+        box(win, 0, 0);
+        keypad(win, 1);
+        return win;
     }
-    items.emplace_back(nullptr);
 
-    MENU *menu = new_menu(const_cast<ITEM**>(items.data()));
+    MENU* create_menu_and_items(
+        WINDOW* win, std::vector<std::string> &choices,
+        std::vector<ITEM*> &items, 
+        fs::path current_dir)
 
-    set_menu_win (menu, win);
-    set_menu_sub (menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
+    {
+        std::string current_dir_s = current_dir.string();
 
-    unsigned longest = 0;
-    for (auto &c : choices) {
-        if (c.length() > longest) longest = c.length(); 
+        for (auto &e : choices) {
+            items.emplace_back(new_item(e.c_str(), ""));
+        }
+        items.emplace_back(nullptr);
+
+        MENU *menu = new_menu(const_cast<ITEM**>(items.data()));
+
+        set_menu_win (menu, win);
+        set_menu_sub (menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
+
+        unsigned longest = 0;
+        for (auto &c : choices) {
+            if (c.length() > longest) longest = c.length(); 
+        }
+        set_menu_format(menu, LINES-5, SUB_WIDTH/longest);
+        
+        set_menu_mark(menu, "");
+
+        mvwaddstr(win, 1, 2, "***** CLIEx *****");
+        move(LINES-3, COLS/2+17); clrtoeol();
+        wattron(win, A_BOLD);
+        mvwaddstr(win, 1, MAIN_WIDTH-current_dir_s.length()-2, current_dir_s.c_str());
+        wattroff(win, A_BOLD);
+        mvaddstr(LINES-2, SUB_WIDTH+7, ("Quit by pressing q."));
+
+        post_menu(menu);
+        return menu;
     }
-    set_menu_format(menu, LINES-5, SUB_WIDTH/longest);
-    
-    set_menu_mark(menu, "");
 
-    mvwaddstr(win, 1, 2, "***** CLIEx *****");
-    move(LINES-3, COLS/2+17); clrtoeol();
-    wattron(win, A_BOLD);
-    mvwaddstr(win, 1, MAIN_WIDTH-current_dir_s.length()-2, current_dir_s.c_str());
-    wattroff(win, A_BOLD);
-    mvaddstr(LINES-2, SUB_WIDTH+7, ("Quit by pressing q."));
+    void delete_and_clear_menu(WINDOW* win, MENU* menu, std::vector<ITEM*> &items) {
+        unpost_menu(menu);
+        free_menu(menu);
+        for (auto &it : items) free_item(it);
+        delwin(win);
+    }
 
-    post_menu(menu);
-    return menu;
-}
-
-void delete_and_clear_menu(WINDOW* win, MENU* menu, std::vector<ITEM*> &items) {
-    unpost_menu(menu);
-    free_menu(menu);
-    for (auto &it : items) free_item(it);
-    delwin(win);
 }
 
 int main(int argc, char const *argv[])
@@ -139,7 +143,7 @@ int main(int argc, char const *argv[])
 
     fs::path current_dir(home_dir);
     std::vector<std::string> choices {};
-    get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
+    cliex::get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
 
     std::vector<ITEM*> items;
     WINDOW *main;
@@ -157,8 +161,8 @@ int main(int argc, char const *argv[])
     nl();
     keypad(stdscr, 1);
 
-    main = create_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1);
-    menu = create_menu_and_items(main, choices, items, current_dir);
+    main = cliex::create_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1);
+    menu = cliex::create_menu_and_items(main, choices, items, current_dir);
 
     refresh();
     wrefresh(main);
@@ -196,18 +200,18 @@ int main(int argc, char const *argv[])
 
                     choices.clear();
                     items.clear();
-                    delete_and_clear_menu(main, menu, items);
+                    cliex::delete_and_clear_menu(main, menu, items);
 
-                    get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
-                    main = create_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1);
-                    menu = create_menu_and_items(main, choices, items, current_dir);
+                    cliex::get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
+                    main = cliex::create_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1);
+                    menu = cliex::create_menu_and_items(main, choices, items, current_dir);
                     refresh();
                 }
         }
         wrefresh(main);
     }
 
-    delete_and_clear_menu(main, menu, items);
+    cliex::delete_and_clear_menu(main, menu, items);
     endwin();
 
     return 0;
