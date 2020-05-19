@@ -120,11 +120,6 @@ int main(int argc, char const *argv[])
     fs::path current_dir(home_dir);
     cliex::get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
 
-    std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b)
-    {
-        return a < b;
-    });
-
     std::vector<ITEM *> items;
     WINDOW *main, *property_win;
     MENU *menu;

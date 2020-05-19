@@ -186,6 +186,10 @@ MENU* cliex::add_file_menu(
     unsigned longest = 0;
     int max_columns;
 
+    std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b)
+    {
+        return a < b;
+    });
     std::transform(choices.begin(), choices.end(), std::back_inserter(items), [](const std::string &s) -> ITEM * { return new_item(s.c_str(), ""); });
     items.emplace_back(nullptr);
 
