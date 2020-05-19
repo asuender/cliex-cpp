@@ -30,7 +30,7 @@ INC = include/$(PACKAGE)
 LINKS = stdc++fs menu ncurses
 
 #TEST = 
-MAIN = cliex.cpp
+MAIN = main.cpp
 
 DEBUG ?= 0
 
