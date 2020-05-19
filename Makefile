@@ -559,8 +559,8 @@ ifeq "$(SOFTWARE)" "$(EXE_SOFTWARE)"
 	@mkdir -p '$(DESTDIR)$(bindir)'
 	@$(INSTALL) -m755 '$(@:install/%=%)' '$(DESTDIR)$(bindir)'
 	$(info Copying config file....)
-	@mkdir -p  /usr/local/etc/test-game
-	@$(INSTALL) -m 644 default.cfg /usr/local/etc/test-game/
+	@mkdir -p  /etc/cliex
+	@$(INSTALL) -m 644 default.cfg /etc/cliex
  .PHONY: install install/target install/$(EXE_TARGET)
 else
  install: install/targets install/headers
