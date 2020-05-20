@@ -22,28 +22,20 @@
  * Definitions of all functions used in the main.cpp file.
 */
 
-#include <fstream>
-
-#include <string>
-
-#include <vector>
-#include <map>
-
+#include "args.hpp"
+#include "cliex.hpp"
 #include <algorithm>
-
 #include <chrono>
-
 #include <experimental/filesystem>
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
-
+#include <fstream>
+#include <map>
 #include <menu.h>
 #include <ncurses.h>
-
-#include "cliex.hpp"
-#include "args.hpp"
+#include <pwd.h>
+#include <string>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;

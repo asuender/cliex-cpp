@@ -23,29 +23,22 @@
  * only contains the main function.
 */
 
-#include <iostream>
-#include <fstream>
-
-#include <string>
-
-#include <vector>
-#include <map>
-
-#include <iterator>
-#include <algorithm>
-
-#include <experimental/filesystem>
-
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
-
-#include <menu.h>
-#include <ncurses.h>
-
 #include "args.hpp"
 #include "cliex.hpp"
+#include <algorithm>
+#include <experimental/filesystem>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <menu.h>
+#include <ncurses.h>
+#include <pwd.h>
+#include <string.h>
+#include <string>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
