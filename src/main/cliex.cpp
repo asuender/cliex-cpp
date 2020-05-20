@@ -339,10 +339,17 @@ void cliex::show_file_info(WINDOW *property_win,
 
     if (!has_perms)
         mvwaddstr(property_win, 7, 3, "Size: Unknown");
+    try
+        {
+            auto ftime = fs::last_write_time(full_path);
+            std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
+            mvwaddstr(property_win, 8, 3, ("Last mod.: "s + std::asctime(std::localtime(&cftime))).c_str());
+        }
+    catch(...)
+        {
+            mvwaddstr(property_win, 8, 3, "Last mod.: unknown");
+        }
 
-    auto ftime = fs::last_write_time(full_path);
-    std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
-    mvwaddstr(property_win, 8, 3, ("Last mod.: "s + std::asctime(std::localtime(&cftime))).c_str());
 }
 
 void cliex::update(std::vector<WINDOW*> windows)

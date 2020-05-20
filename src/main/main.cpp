@@ -220,7 +220,6 @@ change_dir:
 
             selected = item_name(current_item(menu));
             cliex::show_file_info(property_win, selected, current_dir / selected, ftypes);
-
             cliex::update({main, property_win});
         }
 
