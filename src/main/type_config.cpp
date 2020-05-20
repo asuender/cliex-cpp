@@ -49,8 +49,7 @@ type_config type_config::read_from(istream &stream)
     string line, desc;
     vector<string> exts;
     size_t pos_equal;
-    while (getline(stream, line))
-    {
+    while (getline(stream, line)) {
         line = utils::trim(line);
 
         if (line.empty() || (line[0] == '/' || line[0] == '#' || line[0] == ';'))
@@ -77,8 +76,7 @@ type_config type_config::read_from(const string &file_path)
 
 void type_config::merge_with(const type_config &other_config) noexcept
 {
-    for (const auto &pair : other_config._types)
-    {
+    for (const auto &pair : other_config._types) {
         if(this->_types.count(pair.first) > 0) continue;
         this->_types[pair.first] = pair.second;
     }
@@ -93,8 +91,7 @@ type_config type_config::merged_with(const type_config &other_config) const noex
 
 ostream& operator<<(ostream& stream, const type_config &config)
 {
-    for (const auto &pair : config.types())
-    {
+    for (const auto &pair : config.types()) {
         stream << pair.first << " = " << pair.second << '\n';
     }
     return stream;

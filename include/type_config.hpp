@@ -25,35 +25,35 @@
 #include <string>
 #include <vector>
 
-namespace cliex
-{
-    struct type_config
-    {
-        private:
-            std::map<std::string, std::string> _types;
+namespace cliex {
+    struct type_config {
+    private:
+        std::map<std::string, std::string> _types;
 
-        public:
-            inline type_config(const std::map<std::string, std::string> &types)
-                : _types(types)
-            {}
-            static type_config parse(const std::string &str);
-            static type_config read_from(std::istream &stream);
-            static type_config read_from(const std::string &file_path);
+    public:
+        inline type_config(const std::map<std::string, std::string> &types)
+            : _types(types)
+        {}
+        static type_config parse(const std::string &str);
+        static type_config read_from(std::istream &stream);
+        static type_config read_from(const std::string &file_path);
 
-            inline const std::map<std::string, std::string> &types() const noexcept
-            {
-                return _types;
-            }
+        inline const std::map<std::string, std::string> &types() const noexcept
+        {
+            return _types;
+        }
 
-            inline bool operator==(const type_config& rhs) const noexcept {
-                return this->_types == rhs._types;
-            }
-            inline bool operator!=(const type_config& rhs) const noexcept {
-                return !(*this == rhs);
-            }
+        inline bool operator==(const type_config& rhs) const noexcept
+        {
+            return this->_types == rhs._types;
+        }
+        inline bool operator!=(const type_config& rhs) const noexcept
+        {
+            return !(*this == rhs);
+        }
 
-            void merge_with(const type_config &other_config) noexcept;
-            type_config merged_with(const type_config &other_config) const noexcept;
+        void merge_with(const type_config &other_config) noexcept;
+        type_config merged_with(const type_config &other_config) const noexcept;
     };
 }
 

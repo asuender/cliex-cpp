@@ -24,6 +24,7 @@
 
 #include "args.hpp"
 #include "cliex.hpp"
+#include "files.hpp"
 #include "utils.hpp"
 #include <algorithm>
 #include <chrono>
@@ -85,14 +86,6 @@ std::string cliex::get_type(fs::path path, fs::perms p, std::map<std::string, st
     }
 
     return type;
-}
-
-std::string cliex::get_perms(fs::path path)
-{
-    auto p = fs::status(path).permissions();
-    std::string perms_s = "";
-    perms_s += ((p & fs::perms::owner_read) != fs::perms::none ? "r"s : "-"s) + ((p & fs::perms::owner_write) != fs::perms::none ? "w"s : "-"s) + ((p & fs::perms::owner_exec) != fs::perms::none ? "x"s : "-"s) + ((p & fs::perms::group_read) != fs::perms::none ? "r"s : "-"s) + ((p & fs::perms::group_write) != fs::perms::none ? "w"s : "-"s) + ((p & fs::perms::group_exec) != fs::perms::none ? "x"s : "-"s) + ((p & fs::perms::others_read) != fs::perms::none ? "r"s : "-"s) + ((p & fs::perms::others_write) != fs::perms::none ? "w"s : "-"s) + ((p & fs::perms::others_exec) != fs::perms::none ? "x"s : "-"s);
-    return perms_s;
 }
 
 std::map<std::string, std::string> cliex::load_config(std::string file)
@@ -273,7 +266,7 @@ void cliex::show_file_info(WINDOW *property_win,
     mvwaddstr(property_win, 3, 3, selected.c_str());
     mvwaddstr(property_win, 4, 3, ("Type: "s + (is_dir ? "directory" : get_type(full_path, status.permissions(), ftypes))).c_str());
 
-    mvwaddstr(property_win, 6, 3, ("Permissions: "s + get_perms(full_path)).c_str());
+    mvwaddstr(property_win, 6, 3, ("Permissions: "s + perms_to_string(status.permissions())).c_str());
 
     if (!is_dir) {
         try {

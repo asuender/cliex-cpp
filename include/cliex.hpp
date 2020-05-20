@@ -48,7 +48,6 @@ extern const char *home_dir;
 namespace cliex {
     std::map<std::string, std::string> get_all_types();
     std::string get_type(std::experimental::filesystem::path, std::experimental::filesystem::perms, std::map<std::string, std::string>&);
-    std::string get_perms(std::experimental::filesystem::path);
     std::map<std::string, std::string> load_config(std::string);
 
     void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, std::vector<std::string>&);
