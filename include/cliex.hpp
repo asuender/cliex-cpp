@@ -50,7 +50,7 @@ namespace cliex {
     std::string get_type(std::experimental::filesystem::path, std::experimental::filesystem::perms, std::map<std::string, std::string>&);
     std::map<std::string, std::string> load_config(std::string);
 
-    void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, std::vector<std::string>&);
+    void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, bool);
 
     WINDOW *add_win(int, int, int, int, const char*);
     MENU *add_file_menu(WINDOW*, std::vector<std::string>&, std::vector<ITEM*>&, std::experimental::filesystem::path, std::vector<std::string>&);

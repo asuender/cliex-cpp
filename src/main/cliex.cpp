@@ -116,7 +116,7 @@ std::map<std::string, std::string> cliex::load_config(std::string file)
 void cliex::get_dir_content(
     std::vector<std::string> &choices,
     fs::path current_dir,
-    std::vector<std::string> &opts)
+    bool show_hidden_files)
 
 {
     std::string s = current_dir.string();
@@ -140,7 +140,7 @@ void cliex::get_dir_content(
             return s;
         });
 
-        if (opts[INDEX_ARG_HIDDEN_FILES] == "false") {
+        if (!show_hidden_files) {
             choices.erase(std::remove_if(choices.begin(), choices.end(), [](const std::string &s) {
                 return s[0] == '.' and s[1] != '.';
             }),

@@ -48,12 +48,14 @@ const char *home_dir = pw->pw_dir;
 int main(int argc, const char *argv[])
 {
     auto opts = parse_argv(argc, argv);
+    bool show_hidden_files = opts[INDEX_ARG_HIDDEN_FILES] == "true";
+
     auto ftypes = cliex::get_all_types();
 
     std::vector<std::string> choices{};
     std::string selected;
     fs::path current_dir(home_dir);
-    cliex::get_dir_content(choices, current_dir, opts);
+    cliex::get_dir_content(choices, current_dir, show_hidden_files);
 
     std::vector<ITEM *> items;
     WINDOW *main, *property_win;
@@ -139,7 +141,7 @@ change_dir:
                 items.clear();
                 cliex::clear_menu(menu, items);
 
-                cliex::get_dir_content(choices, current_dir, opts);
+                cliex::get_dir_content(choices, current_dir, show_hidden_files);
                 menu = cliex::add_file_menu(main, choices, items, current_dir, opts);
                 selected = item_name(current_item(menu));
             }
