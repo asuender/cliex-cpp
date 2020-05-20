@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include <algorithm>
+#include <cctype>
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -29,10 +30,10 @@ vector<string> split(const string &s)
     auto it = s.begin();
     while (it != s.end()) {
         it = find_if(it, s.end(), [](char c) {
-            return c != ' ';
+            return !isspace(c);
         });
         auto jt = find_if(it, s.end(), [](char c) {
-            return c == ' ';
+            return isspace(c);
         });
         if (it != s.end())
             result.push_back(string(it, jt));
