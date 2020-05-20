@@ -9,14 +9,14 @@ using std::find_if;
 using std::string;
 using std::vector;
 
-string trim(const string &source, const string &delims)
+string trim(const string &str, const string &trimchars)
 {
-    string result(source);
-    size_t index = result.find_last_not_of(delims);
+    string result(str);
+    size_t index = result.find_last_not_of(trimchars);
     if (index != string::npos)
         result.erase(++index);
 
-    index = result.find_first_not_of(delims);
+    index = result.find_first_not_of(trimchars);
     if (index != string::npos)
         result.erase(0, index);
     else
@@ -24,18 +24,18 @@ string trim(const string &source, const string &delims)
     return result;
 }
 
-vector<string> split(const string &s)
+vector<string> split(const string &str)
 {
     vector<string> result;
-    auto it = s.begin();
-    while (it != s.end()) {
-        it = find_if(it, s.end(), [](char c) {
+    auto it = str.begin();
+    while (it != str.end()) {
+        it = find_if(it, str.end(), [](char c) {
             return !isspace(c);
         });
-        auto jt = find_if(it, s.end(), [](char c) {
+        auto jt = find_if(it, str.end(), [](char c) {
             return isspace(c);
         });
-        if (it != s.end())
+        if (it != str.end())
             result.push_back(string(it, jt));
         it = jt;
     }
