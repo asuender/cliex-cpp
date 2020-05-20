@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-std::string trim(std::string const &source, const std::string &delims = " \r\n");
+std::string trim(std::string const &source, const std::string &delims = " \t\n\v\f\r");
 std::vector<std::string> split(const std::string &s);
 std::vector<std::string> parse_argv(int argc, const char *argv[]);
 
