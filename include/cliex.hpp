@@ -32,11 +32,9 @@
 #include <string>
 #include <vector>
 
-namespace fs = std::experimental::filesystem;
-
 #define ROOT_DIR "/"
-#define DEFAULT_TYPES_PATH (fs::path("/etc/cliex/default.cfg"))
-#define USER_TYPES_PATH (fs::path(home_dir) / ".config" / "cliex" / "user.cfg")
+#define DEFAULT_TYPES_PATH (::std::experimental::filesystem::path("/etc/cliex/default.cfg"))
+#define USER_TYPES_PATH (::std::experimental::filesystem::path(home_dir) / ".config" / "cliex" / "user.cfg")
 
 #define MAIN_HEIGHT (LINES - 1)
 #define MAIN_WIDTH (COLS * 0.65)
@@ -55,16 +53,16 @@ extern std::vector<std::string> split(const std::string&);
 
 namespace cliex {
     std::map<std::string, std::string> get_all_types();
-    std::string get_type(fs::path, fs::perms, std::map<std::string, std::string>&);
-    std::string get_perms(fs::path);
+    std::string get_type(std::experimental::filesystem::path, std::experimental::filesystem::perms, std::map<std::string, std::string>&);
+    std::string get_perms(std::experimental::filesystem::path);
     std::map<std::string, std::string> load_config(std::string);
 
-    void get_dir_content(std::vector<std::string>&, fs::path, std::vector<std::string>&);
+    void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, std::vector<std::string>&);
 
     WINDOW *add_win(int, int, int, int, const char *);
-    MENU *add_file_menu(WINDOW*, std::vector<std::string>&, std::vector<ITEM *>&, fs::path, std::vector<std::string>&);
+    MENU *add_file_menu(WINDOW*, std::vector<std::string>&, std::vector<ITEM *>&, std::experimental::filesystem::path, std::vector<std::string>&);
     void clear_menu(MENU*, std::vector<ITEM *>&);
-    void show_file_info(WINDOW*, std::string&, fs::path, std::map<std::string, std::string>&);
+    void show_file_info(WINDOW*, std::string&, std::experimental::filesystem::path, std::map<std::string, std::string>&);
 
     void update(std::vector<WINDOW*>);
 }
