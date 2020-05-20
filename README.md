@@ -48,7 +48,7 @@ Use the arrow keys to navigate between the items. You can enter directories with
 
 ## Screenshots
 
-![Screenshot](screenshot.png)
+![Screenshot](.github/screenshot.png)
 
 ## Resources
 
