@@ -5,10 +5,10 @@ using std::string;
 using std::vector;
 using std::find_if;
 
-string trim(string const &source, char const *delims)
+string trim(const string &source, const char *delims)
 {
     string result(source);
-    string::size_type index = result.find_last_not_of(delims);
+    size_t index = result.find_last_not_of(delims);
     if (index != string::npos)
         result.erase(++index);
 
@@ -38,7 +38,7 @@ vector<string> split(const string &s)
     return result;
 }
 
-vector<string> parse_argv(int argc, char const *argv[])
+vector<string> parse_argv(int argc, const char *argv[])
 {
     vector<string> args(argv, argv + argc);
     vector<string> opts(10);

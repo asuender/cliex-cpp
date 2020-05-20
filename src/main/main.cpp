@@ -45,7 +45,7 @@ using std::literals::string_literals::operator""s;
 const struct passwd *pw = getpwuid(getuid());
 const char *home_dir = pw->pw_dir;
 
-int main(int argc, char const *argv[])
+int main(int argc, const char *argv[])
 {
     auto opts = parse_argv(argc, argv);
     auto ftypes = cliex::get_all_types();

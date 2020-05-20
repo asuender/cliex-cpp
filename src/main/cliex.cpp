@@ -171,7 +171,7 @@ WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char
 
 MENU* cliex::add_file_menu(
     WINDOW *main, std::vector<std::string> &choices,
-    std::vector<ITEM *> &items,
+    std::vector<ITEM*> &items,
     fs::path current_dir,
     std::vector<std::string> &opts)
 

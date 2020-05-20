@@ -25,7 +25,7 @@
 
 std::string trim(std::string const &source, char const *delims = " \r\n");
 std::vector<std::string> split(const std::string &s);
-std::vector<std::string> parse_argv(int argc, char const *argv[]);
+std::vector<std::string> parse_argv(int argc, const char *argv[]);
 
 constexpr size_t INDEX_ARG_HIDDEN_FILES = 0;
 constexpr size_t INDEX_ARG_MAX_COLUMNS  = 1;
