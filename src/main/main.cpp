@@ -118,7 +118,7 @@ int main(int argc, char const *argv[])
     std::vector<std::string> choices{};
     std::string selected;
     fs::path current_dir(home_dir);
-    cliex::get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
+    cliex::get_dir_content(choices, current_dir, opts);
 
     std::vector<ITEM *> items;
     WINDOW *main, *property_win;
@@ -134,7 +134,10 @@ int main(int argc, char const *argv[])
     curs_set(0);
     cbreak();
     nl();
+    use_default_colors();
     keypad(stdscr, 1);
+
+    start_color();
 
     main = cliex::add_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1, "***** CLIEx *****");
     menu = cliex::add_file_menu(main, choices, items, current_dir, opts);
@@ -143,9 +146,7 @@ int main(int argc, char const *argv[])
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
-    refresh();
-    wrefresh(main);
-    wrefresh(property_win);
+    cliex::update({main, property_win});
 
     while ((c = getch()) != 113 && !fin)
         {
@@ -180,6 +181,15 @@ int main(int argc, char const *argv[])
                         }
                     else if (*(selected.end()-1) == '/')
                         {
+                            try
+                                {
+                                    fs::directory_iterator subdir_it(current_dir / selected);
+                                }
+                            catch (...)
+                                {
+                                    break;
+                                }
+
                             selected.erase(selected.end()-1);
                             current_dir = current_dir / selected;
                             goto change_dir;
@@ -202,7 +212,7 @@ change_dir:
                             items.clear();
                             cliex::clear_menu(menu, items);
 
-                            cliex::get_dir_content(current_dir.string().c_str(), choices, current_dir, opts);
+                            cliex::get_dir_content(choices, current_dir, opts);
                             menu = cliex::add_file_menu(main, choices, items, current_dir, opts);
                             selected = item_name(current_item(menu));
                         }
@@ -211,8 +221,7 @@ change_dir:
             selected = item_name(current_item(menu));
             cliex::show_file_info(property_win, selected, current_dir / selected, ftypes);
 
-            wrefresh(main);
-            refresh();
+            cliex::update({main, property_win});
         }
 
     cliex::clear_menu(menu, items);

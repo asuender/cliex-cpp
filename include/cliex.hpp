@@ -57,14 +57,15 @@ namespace cliex
 {
     std::map<std::string, std::string> get_all_types();
     std::string get_type(fs::path, fs::perms, std::map<std::string, std::string>&);
-    std::string get_perms(fs::perms);
+    std::string get_perms(fs::path);
     std::map<std::string, std::string> load_config(std::string);
 
-    void get_dir_content(const char *, std::vector<std::string>&, fs::path, std::vector<std::string>&);
+    void get_dir_content(std::vector<std::string>&, fs::path, std::vector<std::string>&);
 
     WINDOW *add_win(int, int, int, int, const char *);
     MENU *add_file_menu(WINDOW*, std::vector<std::string>&, std::vector<ITEM *>&, fs::path, std::vector<std::string>&);
     void clear_menu(MENU*, std::vector<ITEM *>&);
     void show_file_info(WINDOW*, std::string&, fs::path, std::map<std::string, std::string>&);
 
+    void update(std::vector<WINDOW*>);
 }
