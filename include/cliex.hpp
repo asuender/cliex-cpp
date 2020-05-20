@@ -14,13 +14,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 /**
  * cliex.hpp
  *
  * Declarations of all functions used in the main.cpp file
-*/
+ */
 
 #ifndef _CLIEX_HPP
 #define _CLIEX_HPP
