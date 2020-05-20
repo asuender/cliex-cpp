@@ -5,7 +5,7 @@ using std::string;
 using std::vector;
 using std::find_if;
 
-string trim(const string &source, const char *delims)
+string trim(const string &source, const string &delims)
 {
     string result(source);
     size_t index = result.find_last_not_of(delims);
