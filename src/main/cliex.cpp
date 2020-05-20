@@ -110,8 +110,8 @@ std::map<std::string, std::string> cliex::load_config(std::string file)
         if (line[0] == '/' || line[0] == '#' || line[0] == ';') continue;
 
         pos_equal = line.find('=');
-        value = trim(line.substr(pos_equal + 1));
-        exts = split(line.substr(0, pos_equal));
+        value = utils::trim(line.substr(pos_equal + 1));
+        exts = utils::split(line.substr(0, pos_equal));
 
         for (const auto &e : exts)
             content[e] = value;

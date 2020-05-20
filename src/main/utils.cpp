@@ -9,7 +9,7 @@ using std::find_if;
 using std::string;
 using std::vector;
 
-string trim(const string &str, const string &trimchars)
+string cliex::utils::trim(const string &str, const string &trimchars)
 {
     string result(str);
     size_t index = result.find_last_not_of(trimchars);
@@ -24,7 +24,7 @@ string trim(const string &str, const string &trimchars)
     return result;
 }
 
-vector<string> split(const string &str)
+vector<string> cliex::utils::split(const string &str)
 {
     vector<string> result;
     auto it = str.begin();

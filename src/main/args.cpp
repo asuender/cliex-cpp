@@ -15,8 +15,8 @@ vector<string> parse_argv(int argc, const char *argv[])
     for (auto &a : args) {
         pos_equal = a.find("=");
         if (pos_equal != a.npos) {
-            opt = trim(a.substr(0, pos_equal));
-            value = trim(a.substr(pos_equal + 1));
+            opt = cliex::utils::trim(a.substr(0, pos_equal));
+            value = cliex::utils::trim(a.substr(pos_equal + 1));
             if (opt == "--show_hidden")
                 opts[INDEX_ARG_HIDDEN_FILES] = value;
             else if (opt == "--max_columns")
