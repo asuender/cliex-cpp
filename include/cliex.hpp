@@ -43,13 +43,7 @@
 #define PROPERTY_WIN_HEIGHT (LINES - 5)
 #define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
 
-#define INDEX_ARG_HIDDEN_FILES 0
-#define INDEX_ARG_MAX_COLUMNS 1
-
 extern const char *home_dir;
-
-extern std::string trim(std::string const&, char const* = " \t\r\n");
-extern std::vector<std::string> split(const std::string&);
 
 namespace cliex {
     std::map<std::string, std::string> get_all_types();

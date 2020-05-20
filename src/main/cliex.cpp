@@ -43,6 +43,7 @@
 #include <ncurses.h>
 
 #include "cliex.hpp"
+#include "args.hpp"
 
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;

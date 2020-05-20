@@ -44,6 +44,7 @@
 #include <menu.h>
 #include <ncurses.h>
 
+#include "args.hpp"
 #include "cliex.hpp"
 
 namespace fs = std::experimental::filesystem;
@@ -51,59 +52,6 @@ using std::literals::string_literals::operator""s;
 
 const struct passwd *pw = getpwuid(getuid());
 const char *home_dir = pw->pw_dir;
-
-std::string trim(std::string const &source, char const *delims)
-{
-    std::string result(source);
-    std::string::size_type index = result.find_last_not_of(delims);
-    if (index != std::string::npos)
-        result.erase(++index);
-
-    index = result.find_first_not_of(delims);
-    if (index != std::string::npos)
-        result.erase(0, index);
-    else
-        result.erase();
-    return result;
-}
-
-std::vector<std::string> split(const std::string &s)
-{
-    std::vector<std::string> result;
-    auto it = s.begin();
-    while (it != s.end()) {
-        it = std::find_if(it, s.end(), [](char c) {
-            return c != ' ';
-        });
-        auto jt = std::find_if(it, s.end(), [](char c) {
-            return c == ' ';
-        });
-        if (it != s.end())
-            result.push_back(std::string(it, jt));
-        it = jt;
-    }
-    return result;
-}
-
-std::vector<std::string> parse_argv(int argc, char const *argv[])
-{
-    std::vector<std::string> args(argv, argv + argc);
-    std::vector<std::string> opts(10);
-    size_t pos_equal;
-    std::string opt, value;
-    for (auto &a : args) {
-        pos_equal = a.find("=");
-        if (pos_equal != a.npos) {
-            opt = trim(a.substr(0, pos_equal));
-            value = trim(a.substr(pos_equal + 1));
-            if (opt == "--show_hidden")
-                opts[INDEX_ARG_HIDDEN_FILES] = value;
-            else if (opt == "--max_columns")
-                opts[INDEX_ARG_MAX_COLUMNS] = value;
-        }
-    }
-    return opts;
-}
 
 int main(int argc, char const *argv[])
 {
