@@ -16,16 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>
  */
 
-#ifndef _ARGS_HPP
-#define _ARGS_HPP
+#ifndef _UTILS_HPP
+#define _UTILS_HPP
 
-#include <cstddef>
 #include <string>
 #include <vector>
 
-std::vector<std::string> parse_argv(int argc, const char *argv[]);
+std::string trim(std::string const &source, const std::string &delims = " \t\n\v\f\r");
 
-constexpr size_t INDEX_ARG_HIDDEN_FILES = 0;
-constexpr size_t INDEX_ARG_MAX_COLUMNS  = 1;
+std::vector<std::string> split(const std::string &s);
 
-#endif /* _ARGS_HPP */
+#endif /* _UTILS_HPP */

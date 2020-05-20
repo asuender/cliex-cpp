@@ -24,6 +24,7 @@
 
 #include "args.hpp"
 #include "cliex.hpp"
+#include "utils.hpp"
 #include <algorithm>
 #include <chrono>
 #include <experimental/filesystem>
