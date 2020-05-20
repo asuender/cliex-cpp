@@ -22,6 +22,9 @@
  * Declarations of all functions used in the main.cpp file
 */
 
+#ifndef _CLIEX_HPP
+#define _CLIEX_HPP
+
 #include <string>
 
 #include <vector>
@@ -68,3 +71,5 @@ namespace cliex {
 
     void update(std::vector<WINDOW*>);
 }
+
+#endif /* _CLIEX_HPP */
