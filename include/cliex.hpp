@@ -25,15 +25,12 @@
 #ifndef _CLIEX_HPP
 #define _CLIEX_HPP
 
-#include <string>
-
-#include <vector>
-#include <map>
-
 #include <experimental/filesystem>
-
+#include <map>
 #include <menu.h>
 #include <ncurses.h>
+#include <string>
+#include <vector>
 
 namespace fs = std::experimental::filesystem;
 
