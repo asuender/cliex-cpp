@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <experimental/filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <map>
@@ -82,6 +83,20 @@ int main(int argc, const char *argv[])
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
+    std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
+        if (!fs::is_directory(newdir)) return;
+
+        choices.clear();
+        items.clear();
+        cliex::clear_menu(menu, items);
+
+        cliex::get_dir_content(choices, newdir, show_hidden_files);
+        menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts);
+        selected = item_name(current_item(menu));
+
+        current_dir = newdir;
+    };
+
     for (bool running = true; running; ) {
         refresh();
         wrefresh(explorer_win);
@@ -112,8 +127,7 @@ int main(int argc, const char *argv[])
         case '\n':
             selected = item_name(current_item(menu));
             if (selected == "..") {
-                current_dir = current_dir.parent_path();
-                goto change_dir;
+                change_dir(current_dir.parent_path());
             }
             else if (*(selected.end()-1) == '/') {
                 try {
@@ -124,29 +138,12 @@ int main(int argc, const char *argv[])
                 }
 
                 selected.erase(selected.end()-1);
-                current_dir = current_dir / selected;
-                goto change_dir;
+                change_dir(current_dir / selected);
             }
             break;
-
         case KEY_BACKSPACE:
-            selected = item_name(current_item(menu));
-            if (current_dir != cliex::get_root_path()) {
-                current_dir = current_dir.parent_path();
-                goto change_dir;
-            }
+            change_dir(current_dir.parent_path());
             break;
-
-change_dir:
-            if (fs::is_directory(fs::status(current_dir))) {
-                choices.clear();
-                items.clear();
-                cliex::clear_menu(menu, items);
-
-                cliex::get_dir_content(choices, current_dir, show_hidden_files);
-                menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
-                selected = item_name(current_item(menu));
-            }
         }
 
         selected = item_name(current_item(menu));
