@@ -180,8 +180,8 @@ MENU* cliex::add_file_menu(
 void cliex::clear_menu(MENU *menu, std::vector<ITEM *> &items)
 {
     unpost_menu(menu);
-    free_menu(menu);
     std::for_each(items.begin(), items.end(), free_item);
+    free_menu(menu);
 }
 
 void cliex::show_file_info(WINDOW *property_win,
