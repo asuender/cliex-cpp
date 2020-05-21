@@ -32,8 +32,6 @@
 #include <string>
 #include <vector>
 
-#define ROOT_DIR "/"
-
 #define MAIN_HEIGHT (LINES - 1)
 #define MAIN_WIDTH (COLS * 0.65)
 #define SUB_HEIGHT (LINES - 5)

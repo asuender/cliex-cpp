@@ -76,7 +76,7 @@ void cliex::get_dir_content(
         fs::directory_iterator beg(path);
         fs::directory_iterator end;
 
-        if (current_dir != ROOT_DIR)
+        if (current_dir != get_root_path())
             choices.emplace_back("..");
 
         std::transform(beg, end, std::back_inserter(choices), [](const fs::directory_entry &e) -> std::string {

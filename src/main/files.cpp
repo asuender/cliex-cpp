@@ -32,6 +32,11 @@ using fs::current_path;
 using std::function;
 using std::string;
 
+path cliex::get_root_path() noexcept
+{
+    return fs::absolute(fs::current_path()).root_path();
+}
+
 path cliex::get_home_dir() noexcept
 {
     const string HOME = getenv("HOME");

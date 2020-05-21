@@ -44,9 +44,6 @@
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
 
-const struct passwd *pw = getpwuid(getuid());
-const char *home_dir = pw->pw_dir;
-
 cliex::type_config setup_type_config() noexcept;
 
 int main(int argc, const char *argv[])
@@ -59,7 +56,7 @@ int main(int argc, const char *argv[])
 
     std::vector<std::string> choices{};
     std::string selected;
-    fs::path current_dir(home_dir);
+    fs::path current_dir = cliex::get_home_dir();
     cliex::get_dir_content(choices, current_dir, show_hidden_files);
 
     std::vector<ITEM *> items;
@@ -134,7 +131,7 @@ int main(int argc, const char *argv[])
 
         case KEY_BACKSPACE:
             selected = item_name(current_item(menu));
-            if (current_dir != ROOT_DIR) {
+            if (current_dir != cliex::get_root_path()) {
                 current_dir = current_dir.parent_path();
                 goto change_dir;
             }
@@ -167,8 +164,8 @@ change_dir:
 
 cliex::type_config setup_type_config() noexcept
 {
-    const fs::path default_type_config_path = fs::absolute(fs::current_path()).root_path() / "etc"     / "cliex" / "default.cfg";
-    const fs::path user_type_config_path    = cliex::get_home_dir()                        / ".config" / "cliex" / "user.cfg";
+    const fs::path default_type_config_path = cliex::get_root_path() / "etc"     / "cliex" / "default.cfg";
+    const fs::path user_type_config_path    = cliex::get_home_dir()  / ".config" / "cliex" / "user.cfg";
 
     const bool default_type_config_available = fs::exists(default_type_config_path) && fs::is_regular_file(default_type_config_path);
     const bool user_type_config_available    = fs::exists(user_type_config_path)    && fs::is_regular_file(user_type_config_path);
