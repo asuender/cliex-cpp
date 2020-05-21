@@ -55,15 +55,6 @@ int main(int argc, const char *argv[])
     cliex::type_config type_config = setup_type_config();
     auto ftypes = type_config.types();
 
-    std::vector<std::string> choices{};
-    std::string selected;
-    fs::path current_dir = cliex::get_home_dir();
-    cliex::get_dir_content(choices, current_dir, show_hidden_files);
-
-    std::vector<ITEM*> items;
-    WINDOW *explorer_win, *file_info_win;
-    MENU *menu;
-
     setlocale(LC_ALL, "");
     initscr();
     clear();
@@ -76,10 +67,17 @@ int main(int argc, const char *argv[])
 
     start_color();
 
-    explorer_win = cliex::add_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1, "***** CLIEx *****");
-    menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
+    std::vector<std::string> choices{};
+    std::string selected;
+    fs::path current_dir = cliex::get_home_dir();
+    cliex::get_dir_content(choices, current_dir, show_hidden_files);
 
-    file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, MAIN_WIDTH + 2, "File Information");
+    std::vector<ITEM*> items;
+
+    WINDOW *explorer_win = cliex::add_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1, "***** CLIEx *****");
+    MENU *menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
+
+    WINDOW *file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, MAIN_WIDTH + 2, "File Information");
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
