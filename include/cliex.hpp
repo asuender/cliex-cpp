@@ -33,8 +33,6 @@
 #include <vector>
 
 #define ROOT_DIR "/"
-#define DEFAULT_TYPES_PATH (::std::experimental::filesystem::path("/etc/cliex/default.cfg"))
-#define USER_TYPES_PATH (::std::experimental::filesystem::path(home_dir) / ".config" / "cliex" / "user.cfg")
 
 #define MAIN_HEIGHT (LINES - 1)
 #define MAIN_WIDTH (COLS * 0.65)
@@ -43,12 +41,8 @@
 #define PROPERTY_WIN_HEIGHT (LINES - 5)
 #define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
 
-extern const char *home_dir;
-
 namespace cliex {
-    std::map<std::string, std::string> get_all_types();
     std::string get_type(std::experimental::filesystem::path, std::experimental::filesystem::perms, std::map<std::string, std::string>&);
-    std::map<std::string, std::string> load_config(std::string);
 
     void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, bool);
 

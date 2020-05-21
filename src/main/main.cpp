@@ -24,6 +24,8 @@
 
 #include "args.hpp"
 #include "cliex.hpp"
+#include "files.hpp"
+#include "type_config.hpp"
 #include <algorithm>
 #include <experimental/filesystem>
 #include <fstream>
@@ -45,12 +47,15 @@ using std::literals::string_literals::operator""s;
 const struct passwd *pw = getpwuid(getuid());
 const char *home_dir = pw->pw_dir;
 
+cliex::type_config setup_type_config() noexcept;
+
 int main(int argc, const char *argv[])
 {
     auto opts = parse_argv(argc, argv);
     bool show_hidden_files = opts[INDEX_ARG_HIDDEN_FILES] == "true";
 
-    auto ftypes = cliex::get_all_types();
+    cliex::type_config type_config = setup_type_config();
+    auto ftypes = type_config.types();
 
     std::vector<std::string> choices{};
     std::string selected;
@@ -158,4 +163,36 @@ change_dir:
     endwin();
 
     return 0;
+}
+
+cliex::type_config setup_type_config() noexcept
+{
+    const fs::path default_type_config_path = fs::absolute(fs::current_path()).root_path() / "etc"     / "cliex" / "default.cfg";
+    const fs::path user_type_config_path    = cliex::get_home_dir()                        / ".config" / "cliex" / "user.cfg";
+
+    const bool default_type_config_available = fs::exists(default_type_config_path) && fs::is_regular_file(default_type_config_path);
+    const bool user_type_config_available    = fs::exists(user_type_config_path)    && fs::is_regular_file(user_type_config_path);
+
+    cliex::type_config default_type_config;
+    if (default_type_config_available) {
+        default_type_config = cliex::type_config::read_from(default_type_config_path);
+    }
+    cliex::type_config user_type_config;
+    if (user_type_config_available) {
+        user_type_config = cliex::type_config::read_from(user_type_config_path);
+    }
+
+    if (default_type_config != user_type_config) {
+        user_type_config.merge_with(default_type_config);
+
+        // only overwrite the user type config when it exists
+        if (user_type_config_available) {
+            std::ofstream user_type_config_stream(user_type_config_path);
+            user_type_config_stream << "# Configuration file for cliex.\n"
+                                    "# It is used by the file explorer to detect file types correctly.\n\n";
+            user_type_config_stream << user_type_config;
+        }
+    }
+
+    return user_type_config;
 }

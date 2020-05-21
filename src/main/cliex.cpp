@@ -42,31 +42,6 @@
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
 
-std::map<std::string, std::string> cliex::get_all_types()
-{
-    if (!fs::exists(USER_TYPES_PATH)) {
-        fs::create_directory(USER_TYPES_PATH.parent_path());
-        fs::copy(DEFAULT_TYPES_PATH, USER_TYPES_PATH);
-    }
-
-    auto user_types = load_config(USER_TYPES_PATH);
-
-    if (fs::exists(DEFAULT_TYPES_PATH)) {
-        auto default_types = load_config(DEFAULT_TYPES_PATH);
-        if (user_types.size() != default_types.size() || !std::equal(user_types.begin(), user_types.end(), default_types.begin())) {
-            default_types.insert(user_types.begin(), user_types.end());
-            std::swap(user_types, default_types);
-            std::fstream overwrite{USER_TYPES_PATH, std::ios::out | std::ios::trunc};
-            overwrite << "# Configuration file for cliex.\n# It is used by the file explorer to detect file types correctly.\n\n";
-            for (const auto &t : user_types)
-                overwrite << t.first << " = " << t.second << "\n";
-            overwrite.clear();
-            overwrite.close();
-        }
-    }
-    return user_types;
-}
-
 std::string cliex::get_type(fs::path path, fs::perms p, std::map<std::string, std::string> &ftypes)
 {
     auto filename = path.filename().string();
@@ -86,31 +61,6 @@ std::string cliex::get_type(fs::path path, fs::perms p, std::map<std::string, st
     }
 
     return type;
-}
-
-std::map<std::string, std::string> cliex::load_config(std::string file)
-{
-    std::map<std::string, std::string> content;
-    std::fstream cf{file, std::ios::in};
-
-    std::string line, value;
-    std::vector<std::string> exts;
-    int pos_equal;
-    while (std::getline(cf, line)) {
-        if (!line.length())
-            continue;
-
-        if (line[0] == '/' || line[0] == '#' || line[0] == ';') continue;
-
-        pos_equal = line.find('=');
-        value = utils::trim(line.substr(pos_equal + 1));
-        exts = utils::split(line.substr(0, pos_equal));
-
-        for (const auto &e : exts)
-            content[e] = value;
-    }
-    cf.close();
-    return content;
 }
 
 void cliex::get_dir_content(
