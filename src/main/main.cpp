@@ -82,9 +82,11 @@ int main(int argc, const char *argv[])
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
-    cliex::update({explorer_win, file_info_win});
-
     for (bool running = true; running; ) {
+        refresh();
+        wrefresh(explorer_win);
+        wrefresh(file_info_win);
+
         switch (getch()) {
         case KEY_DOWN:
             menu_driver(menu, REQ_DOWN_ITEM);
@@ -149,7 +151,6 @@ change_dir:
 
         selected = item_name(current_item(menu));
         cliex::show_file_info(file_info_win, selected, current_dir / selected, ftypes);
-        cliex::update({explorer_win, file_info_win});
     }
 
     cliex::clear_menu(menu, items);

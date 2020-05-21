@@ -260,12 +260,3 @@ void cliex::show_file_info(WINDOW *property_win,
     }
 
 }
-
-void cliex::update(std::vector<WINDOW*> windows)
-{
-    refresh();
-    std::for_each(windows.begin(), windows.end(), [](WINDOW* win) {
-        box(win, 0, 0);
-        wrefresh(win);
-    });
-}
