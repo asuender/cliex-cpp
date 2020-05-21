@@ -76,19 +76,23 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
     else if (is_socket(path)) type_desc = "Named IPC Socket";
     else { // regular file
         bool executable = (perms & (perms::owner_exec | perms::group_exec | perms::others_exec)) != perms::none;
-        if (executable) type_desc = "Executable";
 
         auto types = type_config.types();
         auto it_f = types.find(path.filename());
         auto it_e = types.find(path.extension());
 
-        if (it_f != types.end()) {
-            type_desc = it_f->second + " (" + type_desc + ')';
-        }
-        else if (it_e != types.end()) {
-            type_desc = it_f->second + " (" + type_desc + ')';
-        }
-        else if(type_desc.empty()) {
+        if (it_f != types.end() || it_e != types.end()) {
+            if (it_f != types.end()) {
+                type_desc = it_f->second;
+            }
+            else {
+                type_desc = it_e->second;
+            }
+
+            if (executable) type_desc += " (Executable)";
+        } else if (executable) {
+            type_desc = "Executable";
+        } else {
             type_desc = "Unknown";
         }
     }
