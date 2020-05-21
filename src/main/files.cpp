@@ -29,6 +29,7 @@ namespace fs = std::experimental::filesystem;
 using fs::absolute;
 using fs::current_path;
 using fs::path;
+using fs::perms;
 using std::function;
 using std::string;
 
@@ -48,7 +49,7 @@ path cliex::get_home_dir() noexcept
     return absolute(current_path());
 }
 
-string cliex::perms_to_string(fs::perms perms) noexcept
+string cliex::perms_to_string(perms perms) noexcept
 {
     string str;
 
@@ -56,17 +57,17 @@ string cliex::perms_to_string(fs::perms perms) noexcept
         str += (((perms & test_perms) == test_perms) ? c : '-');
     };
 
-    tmp(fs::perms::owner_read, 'r');
-    tmp(fs::perms::owner_write, 'w');
-    tmp(fs::perms::owner_exec, 'x');
+    tmp(perms::owner_read, 'r');
+    tmp(perms::owner_write, 'w');
+    tmp(perms::owner_exec, 'x');
 
-    tmp(fs::perms::group_read, 'r');
-    tmp(fs::perms::group_write, 'w');
-    tmp(fs::perms::group_exec, 'x');
+    tmp(perms::group_read, 'r');
+    tmp(perms::group_write, 'w');
+    tmp(perms::group_exec, 'x');
 
-    tmp(fs::perms::others_read, 'r');
-    tmp(fs::perms::others_write, 'w');
-    tmp(fs::perms::others_exec, 'x');
+    tmp(perms::others_read, 'r');
+    tmp(perms::others_write, 'w');
+    tmp(perms::others_exec, 'x');
 
     return str;
 }
