@@ -154,8 +154,8 @@ change_dir:
     }
 
     cliex::clear_menu(menu, items);
-    delwin(explorer_win);
     delwin(file_info_win);
+    delwin(explorer_win);
     endwin();
 
     return 0;
