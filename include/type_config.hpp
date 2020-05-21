@@ -31,7 +31,7 @@ namespace cliex {
         std::map<std::string, std::string> _types;
 
     public:
-        inline type_config(const std::map<std::string, std::string> &types)
+        inline type_config(const std::map<std::string, std::string> &types = {})
             : _types(types)
         {}
         static type_config parse(const std::string &str);
