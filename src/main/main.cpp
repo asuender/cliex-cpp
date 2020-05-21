@@ -82,7 +82,6 @@ int main(int argc, const char *argv[])
         if (!fs::is_directory(newdir)) return;
 
         choices.clear();
-        items.clear();
         cliex::clear_menu(menu, items);
 
         cliex::get_dir_content(choices, newdir, show_hidden_files);
