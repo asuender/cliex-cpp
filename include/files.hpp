@@ -19,10 +19,20 @@
 #ifndef _FILES_HPP
 #define _FILES_HPP
 
+#include <cstdint>
 #include <experimental/filesystem>
 #include <string>
 
 namespace cliex {
+    struct file_info {
+        std::string name;
+        std::string type_desc;
+        uintmax_t size;
+        std::experimental::filesystem::perms perms;
+        std::experimental::filesystem::file_time_type last_write_time;
+    };
+
+
     std::experimental::filesystem::path get_root_path() noexcept;
     std::experimental::filesystem::path get_home_dir() noexcept;
 
