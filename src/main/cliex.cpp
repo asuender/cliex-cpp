@@ -181,8 +181,7 @@ void cliex::clear_menu(MENU *menu, std::vector<ITEM *> &items)
 {
     unpost_menu(menu);
     free_menu(menu);
-    for (auto &it : items)
-        free_item(it);
+    std::for_each(items.begin(), items.end(), free_item);
 }
 
 void cliex::show_file_info(WINDOW *property_win,
