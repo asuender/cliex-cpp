@@ -17,13 +17,13 @@
  */
 
 #include "files.hpp"
-#include <string>
 #include <experimental/filesystem>
 #include <functional>
+#include <string>
 
 namespace fs = std::experimental::filesystem;
-using std::string;
 using std::function;
+using std::string;
 
 string cliex::perms_to_string(fs::perms perms) noexcept
 {
