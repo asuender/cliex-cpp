@@ -28,6 +28,7 @@
 #include "utils.hpp"
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <experimental/filesystem>
 #include <fstream>
 #include <map>
@@ -197,7 +198,8 @@ void cliex::show_file_info(WINDOW *property_win,
     auto status = fs::status(full_path);
     auto is_dir = fs::is_directory(status);
     bool has_perms = true;
-    size_t size, c_dirs=0, c_files=0;
+    uintmax_t size;
+    size_t c_dirs=0, c_files=0;
 
     std::vector<std::string> units {
         "Byte", "KB", "MB", "GB", "TB"};
