@@ -67,20 +67,17 @@ int main(int argc, const char *argv[])
 
     start_color();
 
-    std::vector<std::string> choices{};
-    std::string selected;
-    fs::path current_dir = cliex::get_home_dir();
-    cliex::get_dir_content(choices, current_dir, show_hidden_files);
-
-    std::vector<ITEM*> items;
-
     WINDOW *explorer_win = cliex::add_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
-    MENU *menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
+    MENU *menu = nullptr;
 
     WINDOW *file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
+    std::vector<std::string> choices;
+    std::vector<ITEM*> items;
+    std::string selected;
+    fs::path current_dir;
     std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
         if (!fs::is_directory(newdir)) return;
 
@@ -89,11 +86,17 @@ int main(int argc, const char *argv[])
         cliex::clear_menu(menu, items);
 
         cliex::get_dir_content(choices, newdir, show_hidden_files);
+        std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
+            return a < b;
+        });
+
         menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts);
         selected = item_name(current_item(menu));
 
         current_dir = newdir;
     };
+
+    change_dir(cliex::get_home_dir());
 
     for (bool running = true; running; ) {
         refresh();
