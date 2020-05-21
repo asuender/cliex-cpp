@@ -29,21 +29,21 @@ string cliex::perms_to_string(fs::perms perms) noexcept
 {
     string str;
 
-    function<char(fs::perms, char)> tmp = [&](fs::perms test_perms, char c) -> char {
-        return (((perms & test_perms) == test_perms) ? c : '-');
+    function<void(fs::perms, char)> tmp = [&](fs::perms test_perms, char c) {
+        str += (((perms & test_perms) == test_perms) ? c : '-');
     };
 
-    str += tmp(fs::perms::owner_read, 'r');
-    str += tmp(fs::perms::owner_write, 'w');
-    str += tmp(fs::perms::owner_exec, 'x');
+    tmp(fs::perms::owner_read, 'r');
+    tmp(fs::perms::owner_write, 'w');
+    tmp(fs::perms::owner_exec, 'x');
 
-    str += tmp(fs::perms::group_read, 'r');
-    str += tmp(fs::perms::group_write, 'w');
-    str += tmp(fs::perms::group_exec, 'x');
+    tmp(fs::perms::group_read, 'r');
+    tmp(fs::perms::group_write, 'w');
+    tmp(fs::perms::group_exec, 'x');
 
-    str += tmp(fs::perms::others_read, 'r');
-    str += tmp(fs::perms::others_write, 'w');
-    str += tmp(fs::perms::others_exec, 'x');
+    tmp(fs::perms::others_read, 'r');
+    tmp(fs::perms::others_write, 'w');
+    tmp(fs::perms::others_exec, 'x');
 
     return str;
 }
