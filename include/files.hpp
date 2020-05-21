@@ -30,7 +30,9 @@ namespace cliex {
         std::string type_desc;
         uintmax_t size;
         std::experimental::filesystem::perms perms;
+        // TODO user owner and group owner
         std::experimental::filesystem::file_time_type last_write_time;
+        // TODO last access time
     };
 
 
