@@ -27,8 +27,8 @@
 
 namespace fs = std::experimental::filesystem;
 using fs::absolute;
-using fs::path;
 using fs::current_path;
+using fs::path;
 using std::function;
 using std::string;
 
