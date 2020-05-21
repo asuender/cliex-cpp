@@ -170,7 +170,7 @@ MENU* cliex::add_file_menu(
     wmove(main, 1, 18);
     wclrtoeol(main);
     wattron(main, A_BOLD);
-    mvwaddstr(main, 1, MAIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
+    mvwaddstr(main, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
     wattroff(main, A_BOLD);
 
     post_menu(menu);

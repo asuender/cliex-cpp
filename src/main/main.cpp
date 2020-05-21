@@ -74,10 +74,10 @@ int main(int argc, const char *argv[])
 
     std::vector<ITEM*> items;
 
-    WINDOW *explorer_win = cliex::add_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1, "***** CLIEx *****");
+    WINDOW *explorer_win = cliex::add_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
     MENU *menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
 
-    WINDOW *file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, MAIN_WIDTH + 2, "File Information");
+    WINDOW *file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 

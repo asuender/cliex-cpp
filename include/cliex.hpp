@@ -32,8 +32,8 @@
 #include <string>
 #include <vector>
 
-#define MAIN_HEIGHT (LINES - 1)
-#define MAIN_WIDTH (COLS * 0.65)
+#define EXPLORER_WIN_HEIGHT (LINES - 1)
+#define EXPLORER_WIN_WIDTH (COLS * 0.65)
 #define SUB_HEIGHT (LINES - 5)
 #define SUB_WIDTH (COLS * 0.65 - 5)
 #define PROPERTY_WIN_HEIGHT (LINES - 5)
