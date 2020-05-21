@@ -17,13 +17,31 @@
  */
 
 #include "files.hpp"
+#include <cstdlib>
 #include <experimental/filesystem>
 #include <functional>
+#include <pwd.h>
 #include <string>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace fs = std::experimental::filesystem;
+using fs::absolute;
+using fs::path;
+using fs::current_path;
 using std::function;
 using std::string;
+
+path cliex::get_home_dir() noexcept
+{
+    const string HOME = getenv("HOME");
+    if(!HOME.empty()) return absolute(HOME);
+
+    const string pw_dir = getpwuid(getuid())->pw_dir;
+    if(!pw_dir.empty()) return absolute(pw_dir);
+
+    return absolute(current_path());
+}
 
 string cliex::perms_to_string(fs::perms perms) noexcept
 {

@@ -23,6 +23,7 @@
 #include <experimental/filesystem>
 
 namespace cliex {
+    std::experimental::filesystem::path get_home_dir() noexcept;
     std::string perms_to_string(std::experimental::filesystem::perms perms) noexcept;
 }
 
