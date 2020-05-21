@@ -88,8 +88,6 @@ int main(int argc, const char *argv[])
     cliex::update({main, property_win});
 
     while ((c = getch()) != 113 && !fin) {
-        auto current_dir_status = fs::status(current_dir);
-
         switch (c) {
         case KEY_DOWN:
             menu_driver(menu, REQ_DOWN_ITEM);
