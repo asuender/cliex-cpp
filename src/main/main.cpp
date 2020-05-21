@@ -87,7 +87,7 @@ int main(int argc, const char *argv[])
 
     cliex::update({main, property_win});
 
-    while ((c = getch()) != 113 && !fin) {
+    while ((c = getch()) != 'q' && !fin) {
         switch (c) {
         case KEY_DOWN:
             menu_driver(menu, REQ_DOWN_ITEM);
@@ -107,7 +107,7 @@ int main(int argc, const char *argv[])
         case KEY_PPAGE:
             menu_driver(menu, REQ_SCR_UPAGE);
             break;
-        case 0xA:
+        case '\n':
             selected = item_name(current_item(menu));
             if (selected == "..") {
                 current_dir = current_dir.parent_path();
