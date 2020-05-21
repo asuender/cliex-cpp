@@ -179,6 +179,7 @@ MENU* cliex::add_file_menu(
 
 void cliex::clear_menu(MENU *menu, std::vector<ITEM *> &items)
 {
+    // TODO use the `menu_items` function and remove the `items` parameter
     unpost_menu(menu);
     std::for_each(items.begin(), items.end(), free_item);
     items.clear();
