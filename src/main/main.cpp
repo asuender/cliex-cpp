@@ -63,9 +63,6 @@ int main(int argc, const char *argv[])
     WINDOW *explorer_win, *file_info_win;
     MENU *menu;
 
-    int c;
-    bool running = true;
-
     setlocale(LC_ALL, "");
     initscr();
     clear();
@@ -87,8 +84,8 @@ int main(int argc, const char *argv[])
 
     cliex::update({explorer_win, file_info_win});
 
-    while ((c = getch()) != 'q' && running) {
-        switch (c) {
+    for (bool running = true; running; ) {
+        switch (getch()) {
         case KEY_DOWN:
             menu_driver(menu, REQ_DOWN_ITEM);
             break;
@@ -106,6 +103,9 @@ int main(int argc, const char *argv[])
             break;
         case KEY_PPAGE:
             menu_driver(menu, REQ_SCR_UPAGE);
+            break;
+        case 'q':
+            running = false;
             break;
         case '\n':
             selected = item_name(current_item(menu));
