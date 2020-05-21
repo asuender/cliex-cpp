@@ -59,8 +59,8 @@ int main(int argc, const char *argv[])
     fs::path current_dir = cliex::get_home_dir();
     cliex::get_dir_content(choices, current_dir, show_hidden_files);
 
-    std::vector<ITEM *> items;
-    WINDOW *main, *property_win;
+    std::vector<ITEM*> items;
+    WINDOW *explorer_win, *file_info_win;
     MENU *menu;
 
     int c;
@@ -78,14 +78,14 @@ int main(int argc, const char *argv[])
 
     start_color();
 
-    main = cliex::add_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1, "***** CLIEx *****");
-    menu = cliex::add_file_menu(main, choices, items, current_dir, opts);
+    explorer_win = cliex::add_win(MAIN_HEIGHT, MAIN_WIDTH, 1, 1, "***** CLIEx *****");
+    menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
 
-    property_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, MAIN_WIDTH + 2, "File Information");
+    file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, MAIN_WIDTH + 2, "File Information");
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
-    cliex::update({main, property_win});
+    cliex::update({explorer_win, file_info_win});
 
     while ((c = getch()) != 'q' && !fin) {
         switch (c) {
@@ -142,19 +142,19 @@ change_dir:
                 cliex::clear_menu(menu, items);
 
                 cliex::get_dir_content(choices, current_dir, show_hidden_files);
-                menu = cliex::add_file_menu(main, choices, items, current_dir, opts);
+                menu = cliex::add_file_menu(explorer_win, choices, items, current_dir, opts);
                 selected = item_name(current_item(menu));
             }
         }
 
         selected = item_name(current_item(menu));
-        cliex::show_file_info(property_win, selected, current_dir / selected, ftypes);
-        cliex::update({main, property_win});
+        cliex::show_file_info(file_info_win, selected, current_dir / selected, ftypes);
+        cliex::update({explorer_win, file_info_win});
     }
 
     cliex::clear_menu(menu, items);
-    delwin(main);
-    delwin(property_win);
+    delwin(explorer_win);
+    delwin(file_info_win);
     endwin();
 
     return 0;
