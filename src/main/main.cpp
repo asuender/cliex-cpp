@@ -64,7 +64,7 @@ int main(int argc, const char *argv[])
     MENU *menu;
 
     int c;
-    bool fin = false;
+    bool running = true;
 
     setlocale(LC_ALL, "");
     initscr();
@@ -87,7 +87,7 @@ int main(int argc, const char *argv[])
 
     cliex::update({explorer_win, file_info_win});
 
-    while ((c = getch()) != 'q' && !fin) {
+    while ((c = getch()) != 'q' && running) {
         switch (c) {
         case KEY_DOWN:
             menu_driver(menu, REQ_DOWN_ITEM);
