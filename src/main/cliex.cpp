@@ -174,6 +174,8 @@ MENU* cliex::add_file_menu(
     mvwaddstr(main, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
     wattroff(main, A_BOLD);
 
+    box(win, 0, 0);
+
     post_menu(menu);
     return menu;
 }
