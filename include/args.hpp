@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-std::vector<std::string> parse_argv(int argc, const char *argv[]);
+std::vector<std::string> parse_argv(int argc, const char *argv[]) noexcept;
 
 constexpr size_t INDEX_ARG_HIDDEN_FILES = 0;
 constexpr size_t INDEX_ARG_MAX_COLUMNS  = 1;

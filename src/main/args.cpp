@@ -24,7 +24,7 @@
 using std::string;
 using std::vector;
 
-vector<string> parse_argv(int argc, const char *argv[])
+vector<string> parse_argv(int argc, const char *argv[]) noexcept
 {
     vector<string> args(argv, argv + argc);
     vector<string> opts(10);

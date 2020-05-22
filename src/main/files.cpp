@@ -65,7 +65,7 @@ path cliex::get_home_dir() noexcept
     return absolute(current_path());
 }
 
-file_info cliex::get_file_info(const path& path, const type_config& type_config) noexcept
+file_info cliex::get_file_info(const path& path, const type_config& type_config)
 {
     file_status status = fs::status(path);
 

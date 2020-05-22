@@ -36,13 +36,13 @@ using std::ostream;
 using std::string;
 using std::vector;
 
-type_config type_config::parse(const string &str)
+type_config type_config::parse(const string &str) noexcept
 {
     istringstream s(str);
     return read_from(s);
 }
 
-type_config type_config::read_from(istream &stream)
+type_config type_config::read_from(istream &stream) noexcept
 {
     map<string, string> types;
 
@@ -68,7 +68,7 @@ type_config type_config::read_from(istream &stream)
     return type_config(types);
 }
 
-type_config type_config::read_from(const string &file_path)
+type_config type_config::read_from(const string &file_path) noexcept
 {
     ifstream stream(file_path);
     return read_from(stream);

@@ -75,7 +75,7 @@ void cliex::get_dir_content(
     }
 }
 
-WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char *title = "")
+WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char *title = "") noexcept
 {
     WINDOW *win;
     win = newwin(height, width, starty, startx);
@@ -90,7 +90,7 @@ MENU* cliex::add_file_menu(
     WINDOW *main, std::vector<std::string> &choices,
     std::vector<ITEM*> &items,
     fs::path current_dir,
-    std::vector<std::string> &opts)
+    std::vector<std::string> &opts) noexcept
 
 {
     init_pair(1, COLOR_RED, -1);
@@ -152,7 +152,7 @@ MENU* cliex::add_file_menu(
     return menu;
 }
 
-void cliex::clear_menu(MENU *menu, std::vector<ITEM *> &items)
+void cliex::clear_menu(MENU *menu, std::vector<ITEM *> &items) noexcept
 {
     // TODO use the `menu_items` function and remove the `items` parameter
     unpost_menu(menu);
