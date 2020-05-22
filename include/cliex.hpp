@@ -40,8 +40,6 @@
 #define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
 
 namespace cliex {
-    std::string get_type(std::experimental::filesystem::path, std::experimental::filesystem::perms, std::map<std::string, std::string>&);
-
     void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, bool);
 
     WINDOW *add_win(int, int, int, int, const char*);

@@ -43,27 +43,6 @@
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
 
-std::string cliex::get_type(fs::path path, fs::perms p, std::map<std::string, std::string> &ftypes)
-{
-    auto filename = path.filename().string();
-    auto extension = path.extension().string();
-    std::string type;
-
-    if (fs::is_block_file(path)) type = "block device";
-    else if (fs::is_character_file(path)) type = "character device";
-    else if (fs::is_fifo(path)) type = "named IPC pipe";
-    else if (fs::is_socket(path)) type = "named IPC socket";
-    else if (fs::is_symlink(path)) type = "symlink";
-    else {
-        auto it_f = ftypes.find(filename);
-        auto it_e = ftypes.find(extension);
-
-        type = (it_f != ftypes.end()) ? it_f->second : (it_e != ftypes.end()) ? it_e->second : ((p & fs::perms::owner_exec) != fs::perms::none || (p & fs::perms::group_exec) != fs::perms::none || (p & fs::perms::others_exec) != fs::perms::none) ? "Executable" : "Unknown";
-    }
-
-    return type;
-}
-
 void cliex::get_dir_content(
     std::vector<std::string> &choices,
     fs::path current_dir,
@@ -174,7 +153,7 @@ MENU* cliex::add_file_menu(
     mvwaddstr(main, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
     wattroff(main, A_BOLD);
 
-    box(win, 0, 0);
+    box(main, 0, 0);
 
     post_menu(menu);
     return menu;
