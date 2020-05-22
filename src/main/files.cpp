@@ -72,7 +72,6 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
     string type_desc;
 
     if (is_dir) type_desc = "Directory";
-    else if (is_symlink(status)) type_desc = "Symlink";
     else if (is_block_file(status)) type_desc = "Block Device";
     else if (is_character_file(status)) type_desc = "Character Device";
     else if (is_fifo(status)) type_desc = "Named IPC Pipe";
@@ -99,6 +98,15 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
         }
         else {
             type_desc = "Unknown";
+        }
+    }
+
+    if (is_symlink(path)) {
+        if(type_desc.empty()) {
+            type_desc = "Symlink";
+        }
+        else {
+            type_desc += " (Symlink)";
         }
     }
 
