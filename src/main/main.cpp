@@ -97,6 +97,7 @@ int main(int argc, const char *argv[])
         selected = item_name(current_item(menu));
 
         current_dir = newdir;
+        chdir(current_dir.c_str());
     };
 
     change_dir(cliex::get_home_dir());
