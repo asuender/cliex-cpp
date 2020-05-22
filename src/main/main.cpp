@@ -228,6 +228,10 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
     std::string selected_file_type_desc = "Type: " + file_info.type_desc;
     mvwaddstr(window, 4, 3, selected_file_type_desc.c_str());
 
+    // file permissions
+    std::string selected_file_perms = "Permissions: " + cliex::perms_to_string(file_info.perms);
+    mvwaddstr(window, 6, 3, selected_file_perms.c_str());
+
     // file size
     if (file_info.type != fs::file_type::directory) {
         // TODO use a double if over 1024
@@ -235,16 +239,12 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
         for (size_t i = 0; ; ++i) {
             if (size < 1024) {
                 std::string selected_file_size = "Size: " + std::to_string(size) + ' ' + units[i];
-                mvwaddstr(window, 6, 3, selected_file_size.c_str());
+                mvwaddstr(window, 7, 3, selected_file_size.c_str());
                 break;
             }
             size /= 1024;
         }
     }
-
-    // file permissions
-    std::string selected_file_perms = "Permissions: " + cliex::perms_to_string(file_info.perms);
-    mvwaddstr(window, 7, 3, selected_file_perms.c_str());
 
     // last write time
     fs::file_time_type ftime = file_info.last_write_time;
