@@ -49,29 +49,26 @@ using std::literals::string_literals::operator""s;
 
 std::map<std::string, std::string> cliex::get_all_types()
 {
-    if (!fs::exists(USER_TYPES_PATH))
-        {
-            fs::create_directory(USER_TYPES_PATH.parent_path());
-            fs::copy(DEFAULT_TYPES_PATH, USER_TYPES_PATH);
-        }
+    if (!fs::exists(USER_TYPES_PATH)) {
+        fs::create_directory(USER_TYPES_PATH.parent_path());
+        fs::copy(DEFAULT_TYPES_PATH, USER_TYPES_PATH);
+    }
 
     auto user_types = load_config(USER_TYPES_PATH);
 
-    if (fs::exists(DEFAULT_TYPES_PATH))
-        {
-            auto default_types = load_config(DEFAULT_TYPES_PATH);
-            if (user_types.size() != default_types.size() || !std::equal(user_types.begin(), user_types.end(), default_types.begin()))
-                {
-                    default_types.insert(user_types.begin(), user_types.end());
-                    std::swap(user_types, default_types);
-                    std::fstream overwrite{USER_TYPES_PATH, std::ios::out | std::ios::trunc};
-                    overwrite << "# Configuration file for cliex.\n# It is used by the file explorer to detect file types correctly.\n\n";
-                    for (const auto &t : user_types)
-                        overwrite << t.first << " = " << t.second << "\n";
-                    overwrite.clear();
-                    overwrite.close();
-                }
+    if (fs::exists(DEFAULT_TYPES_PATH)) {
+        auto default_types = load_config(DEFAULT_TYPES_PATH);
+        if (user_types.size() != default_types.size() || !std::equal(user_types.begin(), user_types.end(), default_types.begin())) {
+            default_types.insert(user_types.begin(), user_types.end());
+            std::swap(user_types, default_types);
+            std::fstream overwrite{USER_TYPES_PATH, std::ios::out | std::ios::trunc};
+            overwrite << "# Configuration file for cliex.\n# It is used by the file explorer to detect file types correctly.\n\n";
+            for (const auto &t : user_types)
+                overwrite << t.first << " = " << t.second << "\n";
+            overwrite.clear();
+            overwrite.close();
         }
+    }
     return user_types;
 }
 
@@ -86,13 +83,12 @@ std::string cliex::get_type(fs::path path, fs::perms p, std::map<std::string, st
     else if (fs::is_fifo(path)) type = "named IPC pipe";
     else if (fs::is_socket(path)) type = "named IPC socket";
     else if (fs::is_symlink(path)) type = "symlink";
-    else
-        {
-            auto it_f = ftypes.find(filename);
-            auto it_e = ftypes.find(extension);
+    else {
+        auto it_f = ftypes.find(filename);
+        auto it_e = ftypes.find(extension);
 
-            type = (it_f != ftypes.end()) ? it_f->second : (it_e != ftypes.end()) ? it_e->second : ((p & fs::perms::owner_exec) != fs::perms::none || (p & fs::perms::group_exec) != fs::perms::none || (p & fs::perms::others_exec) != fs::perms::none) ? "Executable" : "Unknown";
-        }
+        type = (it_f != ftypes.end()) ? it_f->second : (it_e != ftypes.end()) ? it_e->second : ((p & fs::perms::owner_exec) != fs::perms::none || (p & fs::perms::group_exec) != fs::perms::none || (p & fs::perms::others_exec) != fs::perms::none) ? "Executable" : "Unknown";
+    }
 
     return type;
 }
@@ -113,20 +109,19 @@ std::map<std::string, std::string> cliex::load_config(std::string file)
     std::string line, value;
     std::vector<std::string> exts;
     int pos_equal;
-    while (std::getline(cf, line))
-        {
-            if (!line.length())
-                continue;
+    while (std::getline(cf, line)) {
+        if (!line.length())
+            continue;
 
-            if (line[0] == '/' || line[0] == '#' || line[0] == ';') continue;
+        if (line[0] == '/' || line[0] == '#' || line[0] == ';') continue;
 
-            pos_equal = line.find('=');
-            value = trim(line.substr(pos_equal + 1));
-            exts = split(line.substr(0, pos_equal));
+        pos_equal = line.find('=');
+        value = trim(line.substr(pos_equal + 1));
+        exts = split(line.substr(0, pos_equal));
 
-            for (const auto &e : exts)
-                content[e] = value;
-        }
+        for (const auto &e : exts)
+            content[e] = value;
+    }
     cf.close();
     return content;
 }
@@ -140,39 +135,34 @@ void cliex::get_dir_content(
     std::string s = current_dir.string();
     fs::path path(current_dir);
 
-    try
-        {
-            fs::directory_iterator beg(path);
-            fs::directory_iterator end;
+    try {
+        fs::directory_iterator beg(path);
+        fs::directory_iterator end;
 
-            if (current_dir != ROOT_DIR)
-                choices.emplace_back("..");
+        if (current_dir != ROOT_DIR)
+            choices.emplace_back("..");
 
-            std::transform(beg, end, std::back_inserter(choices), [](const fs::directory_entry &e) -> std::string
+        std::transform(beg, end, std::back_inserter(choices), [](const fs::directory_entry &e) -> std::string {
+            auto p = e.path();
+            auto status = fs::status(p);
+            std::string s = p.filename().string();
+            if (fs::is_directory(status))
             {
-                auto p = e.path();
-                auto status = fs::status(p);
-                std::string s = p.filename().string();
-                if (fs::is_directory(status))
-                    {
-                        s += "/";
-                    }
-                return s;
-            });
+                s += "/";
+            }
+            return s;
+        });
 
-            if (opts[INDEX_ARG_HIDDEN_FILES] == "false")
-                {
-                    choices.erase(std::remove_if(choices.begin(), choices.end(), [](const std::string &s)
-                    {
-                        return s[0] == '.' and s[1] != '.';
-                    }),
-                    choices.end());
-                }
+        if (opts[INDEX_ARG_HIDDEN_FILES] == "false") {
+            choices.erase(std::remove_if(choices.begin(), choices.end(), [](const std::string &s) {
+                return s[0] == '.' and s[1] != '.';
+            }),
+            choices.end());
         }
-    catch (...)
-        {
-            return;
-        }
+    }
+    catch (...) {
+        return;
+    }
 }
 
 WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char *title = "")
@@ -199,25 +189,23 @@ MENU* cliex::add_file_menu(
     unsigned longest = 0;
     int max_columns;
 
-    std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b)
-    {
+    std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
         return a < b;
     });
 
-    std::transform(choices.begin(), choices.end(), std::back_inserter(items), [current_dir](const std::string &s) -> ITEM *
-    {
+    std::transform(choices.begin(), choices.end(), std::back_inserter(items), [current_dir](const std::string &s) -> ITEM * {
         ITEM* item = new_item(s.c_str(), "");
         try
-            {
-                if (!fs::is_directory(fs::status(current_dir/s)))
-                    fs::file_size(current_dir / s);
-                else
-                    fs::directory_iterator beg(current_dir/s);
-            }
+        {
+            if (!fs::is_directory(fs::status(current_dir/s)))
+                fs::file_size(current_dir / s);
+            else
+                fs::directory_iterator beg(current_dir/s);
+        }
         catch (...)
-            {
-                item_opts_off(item, O_SELECTABLE);
-            }
+        {
+            item_opts_off(item, O_SELECTABLE);
+        }
         return item;
     });
     items.emplace_back(nullptr);
@@ -226,20 +214,17 @@ MENU* cliex::add_file_menu(
     set_menu_win(menu, main);
     set_menu_sub(menu, derwin(main, SUB_HEIGHT, SUB_WIDTH, 3, 3));
 
-    for (auto &c : choices)
-        {
-            if (c.length() > longest)
-                longest = c.length();
-        }
+    for (auto &c : choices) {
+        if (c.length() > longest)
+            longest = c.length();
+    }
 
-    try
-        {
-            max_columns = std::stoi(opts[INDEX_ARG_MAX_COLUMNS]);
-        }
-    catch (...)
-        {
-            max_columns = SUB_WIDTH / longest;
-        }
+    try {
+        max_columns = std::stoi(opts[INDEX_ARG_MAX_COLUMNS]);
+    }
+    catch (...) {
+        max_columns = SUB_WIDTH / longest;
+    }
 
     set_menu_format(menu, LINES - 5, max_columns < SUB_WIDTH / longest ? max_columns : SUB_WIDTH / longest);
     set_menu_mark(menu, "");
@@ -276,87 +261,73 @@ void cliex::show_file_info(WINDOW *property_win,
     bool has_perms = true;
     size_t size, c_dirs=0, c_files=0;
 
-    std::vector<std::string> units
-    {
+    std::vector<std::string> units {
         "Byte", "KB", "MB", "GB", "TB"};
 
-    std::vector<std::pair<int, int>> line_pos
-    {
+    std::vector<std::pair<int, int>> line_pos {
         make_pair(3, 3),
         make_pair(4, 3),
         make_pair(6, 3),
         make_pair(7, 3),
         make_pair(8, 3)};
 
-    for (auto &p : line_pos)
-        {
-            wmove(property_win, p.first, p.second);
-            wclrtoeol(property_win);
-        }
+    for (auto &p : line_pos) {
+        wmove(property_win, p.first, p.second);
+        wclrtoeol(property_win);
+    }
 
     mvwaddstr(property_win, 3, 3, selected.c_str());
     mvwaddstr(property_win, 4, 3, ("Type: "s + (is_dir ? "directory" : get_type(full_path, status.permissions(), ftypes))).c_str());
 
     mvwaddstr(property_win, 6, 3, ("Permissions: "s + get_perms(full_path)).c_str());
 
-    if (!is_dir)
-        {
-            try
-                {
-                    size = fs::file_size(full_path);
-                }
-            catch (...)
-                {
-                    has_perms = false;
-                }
-
-            for (int i = 0; has_perms; i++)
-                {
-                    if (size < 1024)
-                        {
-                            mvwaddstr(property_win, 7, 3, ("Size: " + std::to_string(size) + " " + units[i]).c_str());
-                            break;
-                        }
-                    size /= 1024;
-                }
+    if (!is_dir) {
+        try {
+            size = fs::file_size(full_path);
         }
-    else
-        {
-            try
-                {
-                    using fp = bool (*)(const fs::path&);
-
-                    c_files = std::count_if(fs::directory_iterator(full_path), fs::directory_iterator{}, (fp)fs::is_regular_file);
-                    c_dirs = std::count_if(fs::directory_iterator(full_path), fs::directory_iterator{}, (fp)fs::is_directory);
-                    mvwaddstr(property_win, 7, 3, ("Size: " + std::to_string(c_dirs) + " subfolders, " + std::to_string(c_files) + " files").c_str());
-
-                }
-            catch (...)
-                {
-                    has_perms = false;
-                }
+        catch (...) {
+            has_perms = false;
         }
+
+        for (int i = 0; has_perms; i++) {
+            if (size < 1024) {
+                mvwaddstr(property_win, 7, 3, ("Size: " + std::to_string(size) + " " + units[i]).c_str());
+                break;
+            }
+            size /= 1024;
+        }
+    }
+    else {
+        try {
+            using fp = bool (*)(const fs::path&);
+
+            c_files = std::count_if(fs::directory_iterator(full_path), fs::directory_iterator{}, (fp)fs::is_regular_file);
+            c_dirs = std::count_if(fs::directory_iterator(full_path), fs::directory_iterator{}, (fp)fs::is_directory);
+            mvwaddstr(property_win, 7, 3, ("Size: " + std::to_string(c_dirs) + " subfolders, " + std::to_string(c_files) + " files").c_str());
+
+        }
+        catch (...) {
+            has_perms = false;
+        }
+    }
 
     if (!has_perms)
         mvwaddstr(property_win, 7, 3, "Size: Unknown");
-    try
-        {
-            auto ftime = fs::last_write_time(full_path);
-            std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
-            mvwaddstr(property_win, 8, 3, ("Last mod.: "s + std::asctime(std::localtime(&cftime))).c_str());
-        }
-    catch(...)
-        {
-            mvwaddstr(property_win, 8, 3, "Last mod.: unknown");
-        }
+    try {
+        auto ftime = fs::last_write_time(full_path);
+        std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
+        mvwaddstr(property_win, 8, 3, ("Last mod.: "s + std::asctime(std::localtime(&cftime))).c_str());
+    }
+    catch(...) {
+        mvwaddstr(property_win, 8, 3, "Last mod.: unknown");
+    }
 
 }
 
 void cliex::update(std::vector<WINDOW*> windows)
 {
     refresh();
-    std::for_each(windows.begin(), windows.end(), [](WINDOW* win)
-    {
+    std::for_each(windows.begin(), windows.end(), [](WINDOW* win) {
         box(win, 0, 0);
         wrefresh(win);
     });
