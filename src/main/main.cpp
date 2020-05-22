@@ -216,7 +216,6 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
 
     // clear the lines were we show the infos
     for (const auto &p : window_info_positions) {
-        // TODO figure out a way to do this without also clearing the border of the window
         wmove(window, p.first, p.second);
         wclrtoeol(window);
     }
@@ -252,4 +251,6 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
     time_t cftime = fs::file_time_type::clock::to_time_t(ftime);
     std::string selected_file_last_write_time = "Last mod.: "s + std::asctime(std::localtime(&cftime));
     mvwaddstr(window, 8, 3, selected_file_last_write_time.c_str());
+
+    box(window, 0, 0);
 }
