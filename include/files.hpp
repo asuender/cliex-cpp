@@ -29,7 +29,9 @@ namespace cliex {
         std::string name;
         std::experimental::filesystem::file_type type;
         std::string type_desc;
-        uintmax_t size;
+        uintmax_t size; // 0 when directory
+        size_t subdirsc; // 0 when not directory
+        size_t filesc; // 0 when not directory
         std::experimental::filesystem::perms perms;
         // TODO user owner and group owner
         std::experimental::filesystem::file_time_type last_write_time;

@@ -18,6 +18,7 @@
 
 #include "files.hpp"
 #include "type_config.hpp"
+#include <algorithm>
 #include <cstdlib>
 #include <experimental/filesystem>
 #include <functional>
@@ -31,6 +32,7 @@ using cliex::file_info;
 using cliex::type_config;
 using fs::absolute;
 using fs::current_path;
+using fs::directory_iterator;
 using fs::file_size;
 using fs::file_status;
 using fs::is_block_file;
@@ -43,6 +45,7 @@ using fs::last_write_time;
 using fs::path;
 using fs::perms;
 using fs::status;
+using std::count_if;
 using std::function;
 using std::string;
 
@@ -110,11 +113,34 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
         }
     }
 
+    uintmax_t size;
+    size_t subdirsc;
+    size_t filesc;
+    if(is_dir) {
+        size = 0;
+        subdirsc = 0;
+        filesc = 0;
+
+        for (const auto &p : directory_iterator(path)) {
+            if (is_directory(p))
+                ++subdirsc;
+            else
+                ++filesc;
+        }
+    }
+    else {
+        size = file_size(path);
+        subdirsc = 0;
+        filesc = 0;
+    }
+
     return file_info {
         .name = path.filename(),
         .type = status.type(),
         .type_desc = type_desc,
-        .size = (is_dir ? 0 : file_size(path)),
+        .size = size,
+        .subdirsc = subdirsc,
+        .filesc = filesc,
         .perms = perms,
         .last_write_time = last_write_time(path)
     };
