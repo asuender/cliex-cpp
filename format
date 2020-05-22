@@ -1,0 +1,6 @@
+#!/bin/sh
+# -*- sh -*-
+# vim: set syntax=sh
+# code: language=shellscript
+
+astyle --options=none --project --recursive 'src/**' --recursive 'include/**'
