@@ -27,6 +27,15 @@
 namespace cliex {
     struct file_info {
         std::string name;
+
+        /**
+         * Only defined if file is a directory. `true` if current user has read
+         * and execute permissions.
+         *
+         * Accessing this if `type` is not `directory` is undefined behaviour.
+         */
+        bool has_access;
+
         std::experimental::filesystem::file_type type;
         std::string type_desc;
         uintmax_t size; // 0 when directory

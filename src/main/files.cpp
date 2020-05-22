@@ -113,19 +113,26 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
         }
     }
 
+    bool has_access;
+
     uintmax_t size;
     size_t subdirsc;
     size_t filesc;
-    if(is_dir) {
+    if (is_dir) {
         size = 0;
         subdirsc = 0;
         filesc = 0;
 
-        for (const auto &p : directory_iterator(path)) {
-            if (is_directory(p))
-                ++subdirsc;
-            else
-                ++filesc;
+        try {
+            for (const auto &p : directory_iterator(path)) {
+                if (is_directory(p))
+                    ++subdirsc;
+                else
+                    ++filesc;
+            }
+            has_access = true;
+        } catch(...) {
+            has_access = false;
         }
     }
     else {
@@ -136,6 +143,7 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
 
     return file_info {
         .name = path.filename(),
+        .has_access = has_access,
         .type = status.type(),
         .type_desc = type_desc,
         .size = size,

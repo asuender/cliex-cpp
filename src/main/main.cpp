@@ -83,7 +83,7 @@ int main(int argc, const char *argv[])
     fs::path current_dir;
     std::string selected;
     std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
-        if (!fs::is_directory(newdir)) return;
+        if (!fs::is_directory(newdir) || !selected_file_info.has_access) return;
 
         choices.clear();
         cliex::clear_menu(menu, items);
@@ -100,7 +100,11 @@ int main(int argc, const char *argv[])
         chdir(current_dir.c_str());
     };
 
-    change_dir(cliex::get_home_dir());
+    {
+        fs::path home_dir = cliex::get_home_dir();
+        selected_file_info = cliex::get_file_info(home_dir, type_config);
+        change_dir(home_dir);
+    }
 
     for (bool running = true; running; ) {
         // show file info
@@ -246,7 +250,7 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
             size /= 1024;
         }
     }
-    else {
+    else if (file_info.has_access) {
         selected_file_size += std::to_string(file_info.subdirsc);
         if (file_info.subdirsc == 1) {
             selected_file_size += " subdirectory";
@@ -262,6 +266,8 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
         else {
             selected_file_size += " files";
         }
+    } else {
+        selected_file_size += "Unknown";
     }
     mvwaddstr(window, 7, 3, selected_file_size.c_str());
 
