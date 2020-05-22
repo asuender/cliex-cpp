@@ -42,7 +42,6 @@ You can parse arguments at startup using this format: `--<KEY>=<VALUE>`.
 | :------------ | :-------------- | :------------------------------------------------------------------------------------------------------------------------ |
 | `show_hidden` | `true`, `false` | Like in `nautilus`, you can show/hide hidden files.                                                                       |
 | `max_columns` | > 0             | Set the max number of columns. If it's bigger than the maximum amount of columns in the menu, it gets set to the maximum. |
-|               |                 |                                                                                                                           |
 
 Use the arrow keys to navigate between the items. You can enter directories with *ENTER*. Go back with *DELETE* . Quit with *q*.
 
