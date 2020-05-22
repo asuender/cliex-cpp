@@ -25,19 +25,12 @@
 #include "args.hpp"
 #include "cliex.hpp"
 #include "files.hpp"
-#include "utils.hpp"
 #include <algorithm>
-#include <chrono>
-#include <cstdint>
 #include <experimental/filesystem>
-#include <fstream>
-#include <map>
+#include <iterator>
 #include <menu.h>
 #include <ncurses.h>
-#include <pwd.h>
 #include <string>
-#include <sys/types.h>
-#include <unistd.h>
 #include <vector>
 
 namespace fs = std::experimental::filesystem;

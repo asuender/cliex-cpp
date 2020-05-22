@@ -23,7 +23,6 @@
 #include <map>
 #include <ostream>
 #include <string>
-#include <vector>
 
 namespace cliex {
     struct type_config {
