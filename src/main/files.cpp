@@ -131,7 +131,8 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
                     ++filesc;
             }
             has_access = true;
-        } catch(...) {
+        }
+        catch(...) {
             has_access = false;
         }
     }

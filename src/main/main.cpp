@@ -266,7 +266,8 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
         else {
             selected_file_size += " files";
         }
-    } else {
+    }
+    else {
         selected_file_size += "Unknown";
     }
     mvwaddstr(window, 7, 3, selected_file_size.c_str());
