@@ -1,0 +1,4 @@
+--style=stroustrup
+--indent-namespaces
+--lineend=linux
+-n

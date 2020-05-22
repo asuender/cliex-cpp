@@ -53,8 +53,7 @@ extern const char *home_dir;
 extern std::string trim(std::string const&, char const* = " \t\r\n");
 extern std::vector<std::string> split(const std::string&);
 
-namespace cliex
-{
+namespace cliex {
     std::map<std::string, std::string> get_all_types();
     std::string get_type(fs::path, fs::perms, std::map<std::string, std::string>&);
     std::string get_perms(fs::path);
