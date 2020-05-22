@@ -47,7 +47,6 @@ namespace cliex {
     WINDOW *add_win(int, int, int, int, const char*);
     MENU *add_file_menu(WINDOW*, std::vector<std::string>&, std::vector<ITEM*>&, std::experimental::filesystem::path, std::vector<std::string>&);
     void clear_menu(MENU*, std::vector<ITEM*>&);
-    void show_file_info(WINDOW*, std::string&, std::experimental::filesystem::path, std::map<std::string, std::string>&);
 }
 
 #endif /* _CLIEX_HPP */

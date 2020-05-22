@@ -27,6 +27,7 @@
 #include "files.hpp"
 #include "type_config.hpp"
 #include <algorithm>
+#include <array>
 #include <experimental/filesystem>
 #include <fstream>
 #include <functional>
@@ -44,8 +45,10 @@
 
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
+using std::make_pair;
 
 cliex::type_config setup_type_config() noexcept;
+void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept;
 
 int main(int argc, const char *argv[])
 {
@@ -76,8 +79,9 @@ int main(int argc, const char *argv[])
 
     std::vector<std::string> choices;
     std::vector<ITEM*> items;
-    std::string selected;
+    cliex::file_info selected_file_info;
     fs::path current_dir;
+    std::string selected;
     std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
         if (!fs::is_directory(newdir)) return;
 
@@ -98,10 +102,23 @@ int main(int argc, const char *argv[])
     change_dir(cliex::get_home_dir());
 
     for (bool running = true; running; ) {
+        // show file info
+        selected = item_name(current_item(menu));
+        {
+            fs::path tmp = current_dir / selected;
+            // this is needed because directory items have a slash at the end of
+            // their names. that should probably be changed TODO
+            if (tmp.filename() == ".") tmp = tmp.parent_path();
+            selected_file_info = cliex::get_file_info(tmp, type_config);
+        }
+        show_file_info(file_info_win, selected_file_info);
+
+        // refresh screen
         refresh();
         wrefresh(explorer_win);
         wrefresh(file_info_win);
 
+        // wait for input and handle
         switch (getch()) {
         case KEY_DOWN:
             menu_driver(menu, REQ_DOWN_ITEM);
@@ -125,7 +142,6 @@ int main(int argc, const char *argv[])
             running = false;
             break;
         case '\n':
-            selected = item_name(current_item(menu));
             if (selected == "..") {
                 change_dir(current_dir.parent_path());
             }
@@ -145,9 +161,6 @@ int main(int argc, const char *argv[])
             change_dir(current_dir.parent_path());
             break;
         }
-
-        selected = item_name(current_item(menu));
-        cliex::show_file_info(file_info_win, selected, current_dir / selected, ftypes);
     }
 
     cliex::clear_menu(menu, items);
@@ -188,4 +201,55 @@ cliex::type_config setup_type_config() noexcept
     }
 
     return user_type_config;
+}
+
+void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
+{
+    const std::array<std::string, 5> units {"Byte", "KB", "MB", "GB", "TB"};
+    constexpr std::array<std::pair<int, int>, 5> window_info_positions {
+        make_pair(3, 3),
+        make_pair(4, 3),
+        make_pair(6, 3),
+        make_pair(7, 3),
+        make_pair(8, 3)
+    };
+
+    // clear the lines were we show the infos
+    for (const auto &p : window_info_positions) {
+        // TODO figure out a way to do this without also clearing the border of the window
+        wmove(window, p.first, p.second);
+        wclrtoeol(window);
+    }
+
+    // file name
+    std::string selected_file_name = file_info.name;
+    mvwaddstr(window, 3, 3, selected_file_name.c_str());
+
+    // file type
+    std::string selected_file_type_desc = "Type: " + file_info.type_desc;
+    mvwaddstr(window, 4, 3, selected_file_type_desc.c_str());
+
+    // file size
+    if (file_info.type != fs::file_type::directory) {
+        // TODO use a double if over 1024
+        uintmax_t size = file_info.size;
+        for (size_t i = 0; ; ++i) {
+            if (size < 1024) {
+                std::string selected_file_size = "Size: " + std::to_string(size) + ' ' + units[i];
+                mvwaddstr(window, 6, 3, selected_file_size.c_str());
+                break;
+            }
+            size /= 1024;
+        }
+    }
+
+    // file permissions
+    std::string selected_file_perms = "Permissions: " + cliex::perms_to_string(file_info.perms);
+    mvwaddstr(window, 7, 3, selected_file_perms.c_str());
+
+    // last write time
+    fs::file_time_type ftime = file_info.last_write_time;
+    time_t cftime = fs::file_time_type::clock::to_time_t(ftime);
+    std::string selected_file_last_write_time = "Last mod.: "s + std::asctime(std::localtime(&cftime));
+    mvwaddstr(window, 8, 3, selected_file_last_write_time.c_str());
 }
