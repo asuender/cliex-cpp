@@ -32,6 +32,7 @@ using cliex::type_config;
 using fs::absolute;
 using fs::current_path;
 using fs::file_size;
+using fs::file_status;
 using fs::is_block_file;
 using fs::is_character_file;
 using fs::is_directory;
@@ -63,17 +64,19 @@ path cliex::get_home_dir() noexcept
 
 file_info cliex::get_file_info(const path& path, const type_config& type_config) noexcept
 {
-    bool is_dir = is_directory(path);
-    perms perms = status(path).permissions();
+    file_status status = fs::status(path);
+
+    bool is_dir = is_directory(status);
+    perms perms = status.permissions();
 
     string type_desc;
 
     if (is_dir) type_desc = "Directory";
-    else if (is_symlink(path)) type_desc = "Symlink";
-    else if (is_block_file(path)) type_desc = "Block Device";
-    else if (is_character_file(path)) type_desc = "Character Device";
-    else if (is_fifo(path)) type_desc = "Named IPC Pipe";
-    else if (is_socket(path)) type_desc = "Named IPC Socket";
+    else if (is_symlink(status)) type_desc = "Symlink";
+    else if (is_block_file(status)) type_desc = "Block Device";
+    else if (is_character_file(status)) type_desc = "Character Device";
+    else if (is_fifo(status)) type_desc = "Named IPC Pipe";
+    else if (is_socket(status)) type_desc = "Named IPC Socket";
     else { // regular file
         bool executable = (perms & (perms::owner_exec | perms::group_exec | perms::others_exec)) != perms::none;
 
@@ -90,15 +93,18 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
             }
 
             if (executable) type_desc += " (Executable)";
-        } else if (executable) {
+        }
+        else if (executable) {
             type_desc = "Executable";
-        } else {
+        }
+        else {
             type_desc = "Unknown";
         }
     }
 
     return file_info {
         .name = path.filename(),
+        .type = status.type(),
         .type_desc = type_desc,
         .size = (is_dir ? 0 : file_size(path)),
         .perms = perms,

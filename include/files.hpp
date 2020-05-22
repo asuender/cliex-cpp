@@ -27,6 +27,7 @@
 namespace cliex {
     struct file_info {
         std::string name;
+        std::experimental::filesystem::file_type type;
         std::string type_desc;
         uintmax_t size;
         std::experimental::filesystem::perms perms;
