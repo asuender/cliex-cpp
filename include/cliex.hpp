@@ -51,7 +51,7 @@ namespace cliex {
         int width,
         int starty,
         int startx,
-        const char *title) noexcept;
+        const std::string &title) noexcept;
     MENU *add_file_menu(
         WINDOW *win,
         std::vector<std::string> &choices,

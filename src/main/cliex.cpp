@@ -70,14 +70,14 @@ void cliex::get_dir_content(
     }
 }
 
-WINDOW *cliex::add_win(int height, int width, int starty, int startx, const char *title = "") noexcept
+WINDOW *cliex::add_win(int height, int width, int starty, int startx, const std::string &title = "") noexcept
 {
     WINDOW *win;
     win = newwin(height, width, starty, startx);
     box(win, 0, 0);
     keypad(win, 1);
 
-    mvwaddstr(win, 1, 2, title);
+    mvwaddstr(win, 1, 2, title.c_str());
     return win;
 }
 
