@@ -41,6 +41,7 @@
 #include <string>
 #include <sys/types.h>
 #include <unistd.h>
+#include <variant>
 #include <vector>
 
 namespace fs = std::experimental::filesystem;
@@ -48,7 +49,9 @@ using std::literals::string_literals::operator""s;
 using std::make_pair;
 
 cliex::type_config setup_type_config() noexcept;
-void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept;
+void show_file_info(
+    WINDOW *window,
+    const cliex::file_info &file_info) noexcept;
 
 int main(int argc, const char *argv[])
 {
@@ -83,7 +86,9 @@ int main(int argc, const char *argv[])
     fs::path current_dir;
     std::string selected;
     std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
-        if (!fs::is_directory(newdir) || !selected_file_info.has_access) return;
+        if (!fs::is_directory(newdir) ||
+                selected_file_info.type != fs::file_type::directory ||
+                !std::get<cliex::dir_info>(selected_file_info.extra_info).has_access) return;
 
         choices.clear();
         cliex::clear_menu(menu, items);
@@ -208,10 +213,12 @@ cliex::type_config setup_type_config() noexcept
     return user_type_config;
 }
 
-void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
+void show_file_info(
+    WINDOW *window,
+    const cliex::file_info &file_info) noexcept
 {
     const std::array<std::string, 5> units {"Byte", "KB", "MB", "GB", "TB"};
-    constexpr std::array<std::pair<int, int>, 5> window_info_positions {
+    constexpr std::array<std::pair<int, int>, 6> window_info_positions {
         make_pair(3, 3),
         make_pair(4, 3),
         make_pair(6, 3),
@@ -239,9 +246,11 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
 
     // file size
     std::string selected_file_size = "Size: ";
-    if (file_info.type != fs::file_type::directory) {
+    if (file_info.type == fs::file_type::regular) {
+        cliex::regular_file_info regular_file_info = std::get<cliex::regular_file_info>(file_info.extra_info);
+
         // TODO use a double if over 1024
-        uintmax_t size = file_info.size;
+        uintmax_t size = regular_file_info.size;
         for (size_t i = 0; ; ++i) {
             if (size < 1024) {
                 selected_file_size += std::to_string(size) + ' ' + units[i];
@@ -250,25 +259,28 @@ void show_file_info(WINDOW *window, const cliex::file_info &file_info) noexcept
             size /= 1024;
         }
     }
-    else if (file_info.has_access) {
-        selected_file_size += std::to_string(file_info.subdirsc);
-        if (file_info.subdirsc == 1) {
-            selected_file_size += " subdirectory";
-        }
-        else {
-            selected_file_size += " subdirectories";
-        }
+    else if (file_info.type == fs::file_type::directory) {
+        cliex::dir_info dir_info = std::get<cliex::dir_info>(file_info.extra_info);
 
-        selected_file_size += ", " + std::to_string(file_info.filesc);
-        if (file_info.filesc == 1) {
-            selected_file_size += " file";
+        if (dir_info.has_access) {
+            selected_file_size += std::to_string(dir_info.subdirsc);
+            if (dir_info.subdirsc == 1)
+                selected_file_size += " subdirectory";
+            else
+                selected_file_size += " subdirectories";
+
+            selected_file_size += ", " + std::to_string(dir_info.filesc);
+            if (dir_info.filesc == 1)
+                selected_file_size += " file";
+            else
+                selected_file_size += " files";
         }
         else {
-            selected_file_size += " files";
+            selected_file_size += "Unknown";
         }
     }
     else {
-        selected_file_size += "Unknown";
+        selected_file_size += "N/A";
     }
     mvwaddstr(window, 7, 3, selected_file_size.c_str());
 

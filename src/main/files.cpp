@@ -24,30 +24,55 @@
 #include <functional>
 #include <pwd.h>
 #include <string>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 namespace fs = std::experimental::filesystem;
+using cliex::dir_info;
 using cliex::file_info;
+using cliex::symlink_info;
 using cliex::type_config;
 using fs::absolute;
 using fs::current_path;
 using fs::directory_iterator;
 using fs::file_size;
 using fs::file_status;
+using fs::file_time_type;
+using fs::file_type;
 using fs::is_block_file;
 using fs::is_character_file;
 using fs::is_directory;
 using fs::is_fifo;
+using fs::is_regular_file;
 using fs::is_socket;
 using fs::is_symlink;
 using fs::last_write_time;
 using fs::path;
 using fs::perms;
+using fs::read_symlink;
 using fs::status;
+using fs::symlink_status;
 using std::count_if;
 using std::function;
 using std::string;
+using std::variant;
+
+static file_time_type symink_last_write_time(const path &path) {
+    using std::chrono::duration_cast;
+    using std::chrono::nanoseconds;
+    using std::chrono::seconds;
+    using clock = file_time_type::clock;
+
+    struct stat sb;
+    if (lstat(path.c_str(), &sb) == -1) {
+        // TODO proper error handling
+        exit(EXIT_FAILURE);
+    }
+
+    auto dur = seconds(sb.st_mtim.tv_sec) + nanoseconds(sb.st_mtim.tv_nsec);
+    return clock::time_point(duration_cast<clock::duration>(dur));
+}
 
 path cliex::get_root_path() noexcept
 {
@@ -65,63 +90,33 @@ path cliex::get_home_dir() noexcept
     return absolute(current_path());
 }
 
-file_info cliex::get_file_info(const path& path, const type_config& type_config)
+file_info cliex::get_file_info(
+    const path& path,
+    const type_config& type_config)
 {
-    file_status status = fs::status(path);
+    file_status stat = symlink_status(path);
+    string name = path.filename();
+    file_type type = stat.type();
+    perms perms = stat.permissions();
+    file_time_type last_write_time = symink_last_write_time(path);
 
-    bool is_dir = is_directory(status);
-    perms perms = status.permissions();
-
-    string type_desc;
-
-    if (is_dir) type_desc = "Directory";
-    else if (is_block_file(status)) type_desc = "Block Device";
-    else if (is_character_file(status)) type_desc = "Character Device";
-    else if (is_fifo(status)) type_desc = "Named IPC Pipe";
-    else if (is_socket(status)) type_desc = "Named IPC Socket";
-    else { // regular file
-        bool executable = (perms & (perms::owner_exec | perms::group_exec | perms::others_exec)) != perms::none;
-
-        auto types = type_config.types();
-        auto it_f = types.find(path.filename());
-        auto it_e = types.find(path.extension());
-
-        if (it_f != types.end() || it_e != types.end()) {
-            if (it_f != types.end()) {
-                type_desc = it_f->second;
+    if (type == file_type::symlink) {
+        return file_info {
+            .name = name,
+            .type_desc = "Symlink",
+            .type = type,
+            .perms = perms,
+            .last_write_time = last_write_time,
+            .extra_info = symlink_info {
+                .target = read_symlink(path)
             }
-            else {
-                type_desc = it_e->second;
-            }
-
-            if (executable) type_desc += " (Executable)";
-        }
-        else if (executable) {
-            type_desc = "Executable";
-        }
-        else {
-            type_desc = "Unknown";
-        }
+        };
     }
 
-    if (is_symlink(path)) {
-        if(type_desc.empty()) {
-            type_desc = "Symlink";
-        }
-        else {
-            type_desc += " (Symlink)";
-        }
-    }
-
-    bool has_access;
-
-    uintmax_t size;
-    size_t subdirsc;
-    size_t filesc;
-    if (is_dir) {
-        size = 0;
-        subdirsc = 0;
-        filesc = 0;
+    if (type == file_type::directory) {
+        bool has_access = true;
+        size_t subdirsc = 0;
+        size_t filesc = 0;
 
         try {
             for (const auto &p : directory_iterator(path)) {
@@ -130,28 +125,99 @@ file_info cliex::get_file_info(const path& path, const type_config& type_config)
                 else
                     ++filesc;
             }
-            has_access = true;
         }
         catch(...) {
             has_access = false;
         }
+
+        return file_info {
+            .name = name,
+            .type_desc = "Directory",
+            .type = type,
+            .perms = perms,
+            .last_write_time = last_write_time,
+            .extra_info = dir_info {
+                .has_access = has_access,
+                .subdirsc = subdirsc,
+                .filesc = filesc
+            }
+        };
+    }
+
+    string type_desc;
+
+    if (type != file_type::regular) {
+        switch (type) {
+        case file_type::block:
+            type_desc = "Block Device";
+            break;
+        case file_type::character:
+            type_desc = "Character Device";
+            break;
+        case file_type::fifo:
+            type_desc = "Named IPC Pipe";
+            break;
+        case file_type::socket:
+            type_desc = "Named IPC Socket";
+            break;
+        case file_type::none:
+            type_desc = "None [ERROR STATE]";
+            break;
+        case file_type::not_found:
+            type_desc = "Not Found [ERROR STATE]";
+            break;
+        case file_type::unknown:
+            type_desc = "Unknown [ERROR STATE]";
+            break;
+        default:
+            type_desc = "[ERROR STATE]";
+            break;
+        }
+
+        return file_info {
+            .name = name,
+            .type_desc = type_desc,
+            .type = type,
+            .perms = perms,
+            .last_write_time = last_write_time,
+            .extra_info = {}
+        };
+    }
+
+    uintmax_t size = file_size(path);
+
+    bool executable = (perms & (perms::owner_exec | perms::group_exec | perms::others_exec)) != perms::none;
+
+    auto types = type_config.types();
+    auto it_f = types.find(path.filename());
+    auto it_e = types.find(path.extension());
+
+    if (it_f != types.end() || it_e != types.end()) {
+        if (it_f != types.end()) {
+            type_desc = it_f->second;
+        }
+        else {
+            type_desc = it_e->second;
+        }
+
+        if (executable) type_desc += " (Executable)";
+    }
+    else if (executable) {
+        type_desc = "Executable";
     }
     else {
-        size = file_size(path);
-        subdirsc = 0;
-        filesc = 0;
+        type_desc = "Unknown Regular File";
     }
 
     return file_info {
-        .name = path.filename(),
-        .has_access = has_access,
-        .type = status.type(),
+        .name = name,
         .type_desc = type_desc,
-        .size = size,
-        .subdirsc = subdirsc,
-        .filesc = filesc,
+        .type = type,
         .perms = perms,
-        .last_write_time = last_write_time(path)
+        .last_write_time = last_write_time,
+        .extra_info = regular_file_info {
+            .size = size
+        }
     };
 }
 

@@ -23,28 +23,50 @@
 #include <cstdint>
 #include <experimental/filesystem>
 #include <string>
+#include <variant>
 
 namespace cliex {
+    struct regular_file_info {
+        uintmax_t size;
+    };
+    struct dir_info {
+        /** `true` if current user has read and execute permissions to the dir. */
+        bool has_access;
+        size_t subdirsc;
+        size_t filesc;
+    };
+    struct symlink_info {
+        std::experimental::filesystem::path target;
+    };
+
     struct file_info {
         std::string name;
 
-        /**
-         * Only defined if file is a directory. `true` if current user has read
-         * and execute permissions.
-         *
-         * Accessing this if `type` is not `directory` is undefined behaviour.
-         */
-        bool has_access;
+        std::string type_desc;
 
         std::experimental::filesystem::file_type type;
-        std::string type_desc;
-        uintmax_t size; // 0 when directory
-        size_t subdirsc; // 0 when not directory
-        size_t filesc; // 0 when not directory
         std::experimental::filesystem::perms perms;
+        // TODO hard link count
         // TODO user owner and group owner
         std::experimental::filesystem::file_time_type last_write_time;
         // TODO last access time
+
+        /**
+         * Will hold a `regular_file_info` if `type` is `file_type::regular`.
+         * Will hold a `dir_info`          if `type` is `file_type::directory`.
+         * Will hold a `symlink_info`      if `type` is `file_type::symlink`.
+         *
+         * Will hold a `std::monostate`    if `type` is anything else.
+         */
+        std::variant<
+            // *INDENT-OFF*
+            std::monostate,
+            regular_file_info,
+            dir_info,
+            symlink_info
+            // TODO add other types as well (character block, fifo, ...)
+            // *INDENT-ON*
+            > extra_info;
     };
 
 
