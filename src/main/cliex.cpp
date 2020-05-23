@@ -87,7 +87,7 @@ WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char
 }
 
 MENU* cliex::add_file_menu(
-    WINDOW *main, std::vector<std::string> &choices,
+    WINDOW *win, std::vector<std::string> &choices,
     std::vector<ITEM*> &items,
     fs::path current_dir,
     std::vector<std::string> &opts) noexcept
@@ -121,8 +121,8 @@ MENU* cliex::add_file_menu(
     items.emplace_back(nullptr);
 
     MENU *menu = new_menu(const_cast<ITEM **>(items.data()));
-    set_menu_win(menu, main);
-    set_menu_sub(menu, derwin(main, SUB_HEIGHT, SUB_WIDTH, 3, 3));
+    set_menu_win(menu, win);
+    set_menu_sub(menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
 
     for (auto &c : choices) {
         if (c.length() > longest)
@@ -140,13 +140,13 @@ MENU* cliex::add_file_menu(
     set_menu_mark(menu, "");
     set_menu_grey(menu, COLOR_PAIR(1));
 
-    wmove(main, 1, 18);
-    wclrtoeol(main);
-    wattron(main, A_BOLD);
-    mvwaddstr(main, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
-    wattroff(main, A_BOLD);
+    wmove(win, 1, 18);
+    wclrtoeol(win);
+    wattron(win, A_BOLD);
+    mvwaddstr(win, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
+    wattroff(win, A_BOLD);
 
-    box(main, 0, 0);
+    box(win, 0, 0);
 
     post_menu(menu);
     return menu;
