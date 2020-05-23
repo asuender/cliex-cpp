@@ -105,10 +105,9 @@ MENU* cliex::add_file_menu(
         ITEM* item = new_item(s.c_str(), "");
         try
         {
-            if (!fs::is_directory(fs::status(current_dir/s)))
-                fs::file_size(current_dir / s);
-            else
-                fs::directory_iterator beg(current_dir/s);
+            const fs::path tmp = current_dir / s;
+            if (fs::is_directory(fs::symlink_status(tmp)))
+                fs::directory_iterator{tmp};
         }
         catch (...)
         {
