@@ -42,18 +42,23 @@ namespace cliex {
     constexpr short color_pair_inaccessible_dir = 1;
 
     void get_dir_content(
-        std::vector<std::string> &,
-        const std::experimental::filesystem::path&,
-        bool);
+        std::vector<std::string> &choices,
+        const std::experimental::filesystem::path &current_dir,
+        bool show_hidden_files);
 
-    WINDOW *add_win(int, int, int, int, const char *) noexcept;
+    WINDOW *add_win(
+        int height,
+        int width,
+        int starty,
+        int startx,
+        const char *title) noexcept;
     MENU *add_file_menu(
-        WINDOW *,
-        std::vector<std::string> &,
-        std::vector<ITEM *> &,
-        const std::experimental::filesystem::path&,
-        unsigned int) noexcept;
-    void clear_menu(MENU *, std::vector<ITEM *> &) noexcept;
+        WINDOW *win,
+        std::vector<std::string> &choices,
+        std::vector<ITEM *> &items,
+        const std::experimental::filesystem::path &current_dir,
+        unsigned int max_columns) noexcept;
+    void clear_menu(MENU *menu, std::vector<ITEM *> &items) noexcept;
 }
 
 #endif /* _CLIEX_HPP */
