@@ -82,7 +82,8 @@ WINDOW *cliex::add_win(int height, int width, int starty, int startx, const char
 }
 
 MENU *cliex::add_file_menu(
-    WINDOW *win, std::vector<std::string> &choices,
+    WINDOW *win,
+    std::vector<std::string> &choices,
     std::vector<ITEM *> &items,
     const fs::path &current_dir,
     unsigned int max_columns) noexcept
