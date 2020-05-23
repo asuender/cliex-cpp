@@ -83,7 +83,11 @@ int main(int argc, const char *argv[])
     std::vector<ITEM *> items;
     cliex::file_info selected_file_info;
     fs::path current_dir;
-    std::string selected;
+
+    std::function<const std::string &()> get_selected = [&]() -> const std::string & {
+        return choices[item_index(current_item(explorer_menu))];
+    };
+
     std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
         if (!fs::is_directory(newdir) ||
                 selected_file_info.type != fs::file_type::directory ||
@@ -98,7 +102,6 @@ int main(int argc, const char *argv[])
         });
 
         explorer_menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
-        selected = item_name(current_item(explorer_menu));
 
         current_dir = newdir;
         chdir(current_dir.c_str());
@@ -112,9 +115,8 @@ int main(int argc, const char *argv[])
 
     for (bool running = true; running; ) {
         // show file info
-        selected = item_name(current_item(explorer_menu));
         {
-            fs::path tmp = current_dir / selected;
+            fs::path tmp = current_dir / get_selected();
             // this is needed because directory items have a slash at the end of
             // their names. that should probably be changed TODO
             if (tmp.filename() == ".") tmp = tmp.parent_path();
@@ -150,7 +152,8 @@ int main(int argc, const char *argv[])
         case 'q':
             running = false;
             break;
-        case '\n':
+        case '\n': {
+            std::string selected = get_selected();
             if (selected == "..") {
                 change_dir(current_dir.parent_path());
             }
@@ -159,6 +162,7 @@ int main(int argc, const char *argv[])
                 change_dir(current_dir / selected);
             }
             break;
+        }
         case KEY_BACKSPACE:
             change_dir(current_dir.parent_path());
             break;
