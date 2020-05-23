@@ -156,13 +156,6 @@ int main(int argc, const char *argv[])
                 change_dir(current_dir.parent_path());
             }
             else if (*(selected.end()-1) == '/') {
-                try {
-                    fs::directory_iterator subdir_it(current_dir / selected);
-                }
-                catch (...) {
-                    break;
-                }
-
                 selected.erase(selected.end()-1);
                 change_dir(current_dir / selected);
             }
