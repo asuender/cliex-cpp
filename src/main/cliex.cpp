@@ -38,7 +38,7 @@ using std::literals::string_literals::operator""s;
 
 void cliex::get_dir_content(
     std::vector<std::string> &choices,
-    fs::path current_dir,
+    const fs::path &current_dir,
     bool show_hidden_files)
 
 {
@@ -84,7 +84,7 @@ WINDOW *cliex::add_win(int height, int width, int starty, int startx, const char
 MENU *cliex::add_file_menu(
     WINDOW *win, std::vector<std::string> &choices,
     std::vector<ITEM *> &items,
-    fs::path current_dir,
+    const fs::path &current_dir,
     unsigned int max_columns) noexcept
 
 {
