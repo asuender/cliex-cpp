@@ -1,8 +1,17 @@
 --style=stroustrup
+
+--indent=spaces=4
+
 --indent-namespaces
+
+--pad-comma
 
 --align-pointer=name
 --align-reference=name
 
+--attach-return-type
+--attach-return-type-decl
+
 --lineend=linux
+
 -n
