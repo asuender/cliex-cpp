@@ -24,7 +24,7 @@
 
 namespace cliex::utils {
     std::string trim(
-        std::string const &str,
+        const std::string &str,
         const std::string &trimchars = " \t\n\v\f\r") noexcept;
 
     std::vector<std::string> split(const std::string &str) noexcept;
