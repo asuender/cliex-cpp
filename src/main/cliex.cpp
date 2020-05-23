@@ -45,33 +45,28 @@ void cliex::get_dir_content(
     std::string s = current_dir.string();
     fs::path path(current_dir);
 
-    try {
-        fs::directory_iterator beg(path);
-        fs::directory_iterator end;
+    fs::directory_iterator beg(path);
+    fs::directory_iterator end;
 
-        if (current_dir != get_root_path())
-            choices.emplace_back("..");
+    if (current_dir != get_root_path())
+        choices.emplace_back("..");
 
-        std::transform(beg, end, std::back_inserter(choices), [](const fs::directory_entry &e) -> std::string {
-            auto p = e.path();
-            auto status = fs::status(p);
-            std::string s = p.filename().string();
-            if (fs::is_directory(status))
-            {
-                s += "/";
-            }
-            return s;
-        });
-
-        if (!show_hidden_files) {
-            choices.erase(std::remove_if(choices.begin(), choices.end(), [](const std::string &s) {
-                return s[0] == '.' and s[1] != '.';
-            }),
-            choices.end());
+    std::transform(beg, end, std::back_inserter(choices), [](const fs::directory_entry &e) -> std::string {
+        auto p = e.path();
+        auto status = fs::status(p);
+        std::string s = p.filename().string();
+        if (fs::is_directory(status))
+        {
+            s += "/";
         }
-    }
-    catch (...) {
-        return;
+        return s;
+    });
+
+    if (!show_hidden_files) {
+        choices.erase(std::remove_if(choices.begin(), choices.end(), [](const std::string &s) {
+            return s[0] == '.' and s[1] != '.';
+        }),
+        choices.end());
     }
 }
 
