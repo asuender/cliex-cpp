@@ -70,7 +70,7 @@ void cliex::get_dir_content(
     }
 }
 
-WINDOW *cliex::add_win(int height, int width, int starty, int startx, const std::string &title = "") noexcept
+WINDOW *cliex::add_win(int height, int width, int starty, int startx, const std::string &title) noexcept
 {
     WINDOW *win;
     win = newwin(height, width, starty, startx);
