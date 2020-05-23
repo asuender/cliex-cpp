@@ -1,4 +1,8 @@
 --style=stroustrup
 --indent-namespaces
+
+--align-pointer=name
+--align-reference=name
+
 --lineend=linux
 -n

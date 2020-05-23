@@ -82,7 +82,7 @@ int main(int argc, const char *argv[])
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
     std::vector<std::string> choices;
-    std::vector<ITEM*> items;
+    std::vector<ITEM *> items;
     cliex::file_info selected_file_info;
     fs::path current_dir;
     std::string selected;

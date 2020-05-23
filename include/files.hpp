@@ -74,8 +74,8 @@ namespace cliex {
     std::experimental::filesystem::path get_home_dir() noexcept;
 
     file_info get_file_info(
-        const std::experimental::filesystem::path& path,
-        const type_config& type_config);
+        const std::experimental::filesystem::path &path,
+        const type_config &type_config);
 
     std::string perms_to_string(std::experimental::filesystem::perms perms) noexcept;
 }

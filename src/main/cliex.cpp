@@ -70,7 +70,7 @@ void cliex::get_dir_content(
     }
 }
 
-WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char *title = "") noexcept
+WINDOW *cliex::add_win(int height, int width, int starty, int startx, const char *title = "") noexcept
 {
     WINDOW *win;
     win = newwin(height, width, starty, startx);
@@ -81,9 +81,9 @@ WINDOW* cliex::add_win(int height, int width, int starty, int startx, const char
     return win;
 }
 
-MENU* cliex::add_file_menu(
+MENU *cliex::add_file_menu(
     WINDOW *win, std::vector<std::string> &choices,
-    std::vector<ITEM*> &items,
+    std::vector<ITEM *> &items,
     fs::path current_dir,
     std::vector<std::string> &opts) noexcept
 
@@ -97,7 +97,7 @@ MENU* cliex::add_file_menu(
     });
 
     std::transform(choices.begin(), choices.end(), std::back_inserter(items), [current_dir](const std::string &s) -> ITEM * {
-        ITEM* item = new_item(s.c_str(), "");
+        ITEM *item = new_item(s.c_str(), "");
         try
         {
             const fs::path tmp = current_dir / s;

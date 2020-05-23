@@ -89,7 +89,7 @@ type_config type_config::merged_with(const type_config &other_config) const noex
     return ret;
 }
 
-ostream& operator<<(ostream& stream, const type_config &config)
+ostream &operator<<(ostream &stream, const type_config &config)
 {
     for (const auto &pair : config.types()) {
         stream << pair.first << " = " << pair.second << '\n';

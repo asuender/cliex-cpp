@@ -92,8 +92,8 @@ path cliex::get_home_dir() noexcept
 }
 
 file_info cliex::get_file_info(
-    const path& path,
-    const type_config& type_config)
+    const path &path,
+    const type_config &type_config)
 {
     file_status stat = symlink_status(path);
     string name = path.filename();

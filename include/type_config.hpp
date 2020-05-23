@@ -42,11 +42,11 @@ namespace cliex {
             return _types;
         }
 
-        inline bool operator==(const type_config& rhs) const noexcept
+        inline bool operator==(const type_config &rhs) const noexcept
         {
             return this->_types == rhs._types;
         }
-        inline bool operator!=(const type_config& rhs) const noexcept
+        inline bool operator!=(const type_config &rhs) const noexcept
         {
             return !(*this == rhs);
         }
