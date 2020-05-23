@@ -115,7 +115,7 @@ MENU *cliex::add_file_menu(
     set_menu_win(menu, win);
     set_menu_sub(menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
 
-    for (auto &c : choices) {
+    for (const auto &c : choices) {
         if (c.length() > longest)
             longest = c.length();
     }
