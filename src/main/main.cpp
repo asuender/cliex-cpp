@@ -72,6 +72,7 @@ int main(int argc, const char *argv[])
     keypad(stdscr, 1);
 
     start_color();
+    init_pair(cliex::color_pair_inaccessible_dir, COLOR_RED, -1);
 
     WINDOW *explorer_win = cliex::add_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
     MENU *menu = nullptr;
