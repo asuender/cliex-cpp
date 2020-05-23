@@ -223,7 +223,8 @@ void show_file_info(
         make_pair(4, 3),
         make_pair(6, 3),
         make_pair(7, 3),
-        make_pair(8, 3)
+        make_pair(8, 3),
+        make_pair(10, 3)
     };
 
     // clear the lines were we show the infos
@@ -289,6 +290,14 @@ void show_file_info(
     time_t cftime = fs::file_time_type::clock::to_time_t(ftime);
     std::string selected_file_last_write_time = "Last mod.: "s + std::asctime(std::localtime(&cftime));
     mvwaddstr(window, 8, 3, selected_file_last_write_time.c_str());
+
+    // symlink target
+    if (file_info.type == fs::file_type::symlink) {
+        cliex::symlink_info symlink_info = std::get<cliex::symlink_info>(file_info.extra_info);
+
+        std::string selected_file_symlink_target = "Symlink target: "s + symlink_info.target.string();
+        mvwaddstr(window, 10, 3, selected_file_symlink_target.c_str());
+    }
 
     box(window, 0, 0);
 }
