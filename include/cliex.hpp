@@ -46,7 +46,7 @@ namespace cliex {
         const std::experimental::filesystem::path &current_dir,
         bool show_hidden_files);
 
-    WINDOW *add_win(
+    WINDOW *create_win(
         int height,
         int width,
         int starty,
