@@ -73,7 +73,7 @@ int main(int argc, const char *argv[])
     init_pair(cliex::color_pair_inaccessible_dir, COLOR_RED, -1);
 
     WINDOW *explorer_win = cliex::add_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
-    MENU *menu = nullptr;
+    MENU *explorer_menu = nullptr;
 
     WINDOW *file_info_win = cliex::add_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
 
@@ -90,15 +90,15 @@ int main(int argc, const char *argv[])
                 !std::get<cliex::dir_info>(selected_file_info.extra_info).has_access) return;
 
         choices.clear();
-        cliex::clear_menu(menu, items);
+        cliex::clear_menu(explorer_menu, items);
 
         cliex::get_dir_content(choices, newdir, opts.show_hidden_files);
         std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
             return a < b;
         });
 
-        menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
-        selected = item_name(current_item(menu));
+        explorer_menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
+        selected = item_name(current_item(explorer_menu));
 
         current_dir = newdir;
         chdir(current_dir.c_str());
@@ -112,7 +112,7 @@ int main(int argc, const char *argv[])
 
     for (bool running = true; running; ) {
         // show file info
-        selected = item_name(current_item(menu));
+        selected = item_name(current_item(explorer_menu));
         {
             fs::path tmp = current_dir / selected;
             // this is needed because directory items have a slash at the end of
@@ -130,22 +130,22 @@ int main(int argc, const char *argv[])
         // wait for input and handle
         switch (getch()) {
         case KEY_DOWN:
-            menu_driver(menu, REQ_DOWN_ITEM);
+            menu_driver(explorer_menu, REQ_DOWN_ITEM);
             break;
         case KEY_UP:
-            menu_driver(menu, REQ_UP_ITEM);
+            menu_driver(explorer_menu, REQ_UP_ITEM);
             break;
         case KEY_RIGHT:
-            menu_driver(menu, REQ_RIGHT_ITEM);
+            menu_driver(explorer_menu, REQ_RIGHT_ITEM);
             break;
         case KEY_LEFT:
-            menu_driver(menu, REQ_LEFT_ITEM);
+            menu_driver(explorer_menu, REQ_LEFT_ITEM);
             break;
         case KEY_NPAGE:
-            menu_driver(menu, REQ_SCR_DPAGE);
+            menu_driver(explorer_menu, REQ_SCR_DPAGE);
             break;
         case KEY_PPAGE:
-            menu_driver(menu, REQ_SCR_UPAGE);
+            menu_driver(explorer_menu, REQ_SCR_UPAGE);
             break;
         case 'q':
             running = false;
@@ -165,7 +165,7 @@ int main(int argc, const char *argv[])
         }
     }
 
-    cliex::clear_menu(menu, items);
+    cliex::clear_menu(explorer_menu, items);
     delwin(file_info_win);
     delwin(explorer_win);
     endwin();
