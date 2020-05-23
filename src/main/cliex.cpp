@@ -93,7 +93,7 @@ MENU* cliex::add_file_menu(
     std::vector<std::string> &opts) noexcept
 
 {
-    init_pair(1, COLOR_RED, -1);
+    init_pair(color_pair_inaccessible_dir, COLOR_RED, -1);
 
     std::string current_dir_s = current_dir.string();
     unsigned longest = 0;
@@ -138,7 +138,7 @@ MENU* cliex::add_file_menu(
 
     set_menu_format(menu, LINES - 5, max_columns < SUB_WIDTH / longest ? max_columns : SUB_WIDTH / longest);
     set_menu_mark(menu, "");
-    set_menu_grey(menu, COLOR_PAIR(1));
+    set_menu_grey(menu, COLOR_PAIR(color_pair_inaccessible_dir));
 
     wmove(win, 1, 18);
     wclrtoeol(win);

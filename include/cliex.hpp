@@ -39,6 +39,8 @@
 #define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
 
 namespace cliex {
+    constexpr short color_pair_inaccessible_dir = 1;
+
     void get_dir_content(std::vector<std::string>&, std::experimental::filesystem::path, bool);
 
     WINDOW *add_win(int, int, int, int, const char*) noexcept;
