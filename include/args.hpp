@@ -22,10 +22,15 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include <cstdint>
 
-std::vector<std::string> parse_argv(int argc, const char *argv[]) noexcept;
+namespace cliex::cl {
+    struct opts {
+        bool show_hidden_files;
+        unsigned int max_columns;
+    };
 
-constexpr size_t INDEX_ARG_HIDDEN_FILES = 0;
-constexpr size_t INDEX_ARG_MAX_COLUMNS  = 1;
+    opts parse_argv(int argc, const char *argv[]) noexcept;
+}
 
 #endif /* _ARGS_HPP */

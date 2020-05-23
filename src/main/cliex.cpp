@@ -85,12 +85,11 @@ MENU *cliex::add_file_menu(
     WINDOW *win, std::vector<std::string> &choices,
     std::vector<ITEM *> &items,
     fs::path current_dir,
-    std::vector<std::string> &opts) noexcept
+    unsigned int max_columns) noexcept
 
 {
     std::string current_dir_s = current_dir.string();
     unsigned longest = 0;
-    int max_columns;
 
     std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
         return a < b;
@@ -119,13 +118,6 @@ MENU *cliex::add_file_menu(
     for (auto &c : choices) {
         if (c.length() > longest)
             longest = c.length();
-    }
-
-    try {
-        max_columns = std::stoi(opts[INDEX_ARG_MAX_COLUMNS]);
-    }
-    catch (...) {
-        max_columns = SUB_WIDTH / longest;
     }
 
     set_menu_format(menu, LINES - 5, max_columns < SUB_WIDTH / longest ? max_columns : SUB_WIDTH / longest);

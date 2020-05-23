@@ -18,28 +18,55 @@
 
 #include "args.hpp"
 #include "utils.hpp"
+#include <algorithm>
 #include <string>
 #include <vector>
 
+using cliex::cl::opts;
+using std::for_each;
+using std::optional;
+using std::stoi;
 using std::string;
 using std::vector;
 
-vector<string> parse_argv(int argc, const char *argv[]) noexcept
+opts cliex::cl::parse_argv(int argc, const char *argv[]) noexcept
 {
-    vector<string> args(argv, argv + argc);
-    vector<string> opts(10);
-    size_t pos_equal;
-    string opt, value;
-    for (auto &a : args) {
-        pos_equal = a.find("=");
-        if (pos_equal != a.npos) {
-            opt = cliex::utils::trim(a.substr(0, pos_equal));
-            value = cliex::utils::trim(a.substr(pos_equal + 1));
-            if (opt == "--show-hidden")
-                opts[INDEX_ARG_HIDDEN_FILES] = value;
-            else if (opt == "--max-columns")
-                opts[INDEX_ARG_MAX_COLUMNS] = value;
+    bool show_hidden_files = false;
+    unsigned int max_columns = -1;
+
+    for_each(argv, argv + argc, [&](const std::string &arg) {
+        if (arg.substr(0, 2) != "--") return;
+
+        size_t pos_equal = arg.find('=');
+        string opt;
+        string opt_arg;
+
+        // check if option has argument
+        if (pos_equal == string::npos) {
+            opt = arg.substr(2);
         }
-    }
-    return opts;
+        else {
+            opt = arg.substr(2, pos_equal - 2);
+            opt_arg = arg.substr(pos_equal + 1);
+        }
+
+        // handle option
+        if (opt == "show-hidden") {
+            show_hidden_files = true;
+        }
+        else if (opt == "hide-hidden") {
+            show_hidden_files = false;
+        }
+        else if (opt == "max-columns") {
+            try {
+                max_columns = stoi(opt_arg);
+            }
+            catch (...) {}
+        }
+    });
+
+    return opts {
+        .show_hidden_files = show_hidden_files,
+        .max_columns = max_columns
+    };
 }

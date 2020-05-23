@@ -36,12 +36,13 @@ And run:
 
 ### Command line arguments
 
-You can parse arguments at startup using this format: `--<KEY>=<VALUE>`.
+Options use the standard GNU long options format.
 
-|      Key      | Possible values |                                                        Description                                                        |
-| :------------ | :-------------- | :------------------------------------------------------------------------------------------------------------------------ |
-| `show-hidden` | `true`, `false` | Like in `nautilus`, you can show/hide hidden files.                                                                       |
-| `max-columns` | > 0             | Set the max number of columns. If it's bigger than the maximum amount of columns in the menu, it gets set to the maximum. |
+|    Option     |     Argument     |                                                                               Description                                                                                |
+| :------------ | :--------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `show-hidden` | _None_           | Show hidden files                                                                                                                                                        |
+| `hide-hidden` | _None_           | Hide hidden files (default)                                                                                                                                              |
+| `max-columns` | Positive integer | Set the maximum amount of columns to display in the explorer. If it's bigger than the maximum amount of columns that can be displayed, that maximum will be used instead |
 
 Use the arrow keys to navigate between the items. You can enter directories with *ENTER*. Go back with *DELETE* . Quit with *q*.
 

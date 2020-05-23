@@ -55,8 +55,7 @@ void show_file_info(
 
 int main(int argc, const char *argv[])
 {
-    auto opts = parse_argv(argc, argv);
-    bool show_hidden_files = opts[INDEX_ARG_HIDDEN_FILES] == "true";
+    cliex::cl::opts opts = cliex::cl::parse_argv(argc, argv);
 
     cliex::type_config type_config = setup_type_config();
     auto ftypes = type_config.types();
@@ -94,12 +93,12 @@ int main(int argc, const char *argv[])
         choices.clear();
         cliex::clear_menu(menu, items);
 
-        cliex::get_dir_content(choices, newdir, show_hidden_files);
+        cliex::get_dir_content(choices, newdir, opts.show_hidden_files);
         std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
             return a < b;
         });
 
-        menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts);
+        menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
         selected = item_name(current_item(menu));
 
         current_dir = newdir;
