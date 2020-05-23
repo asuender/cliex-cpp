@@ -58,7 +58,7 @@ using std::function;
 using std::string;
 using std::variant;
 
-static file_time_type symink_last_write_time(const path &path)
+static file_time_type symlink_last_write_time(const path &path)
 {
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
@@ -99,7 +99,7 @@ file_info cliex::get_file_info(
     string name = path.filename();
     file_type type = stat.type();
     perms perms = stat.permissions();
-    file_time_type last_write_time = symink_last_write_time(path);
+    file_time_type last_write_time = symlink_last_write_time(path);
 
     if (type == file_type::symlink) {
         return file_info {
