@@ -58,7 +58,8 @@ using std::function;
 using std::string;
 using std::variant;
 
-static file_time_type symink_last_write_time(const path &path) {
+static file_time_type symink_last_write_time(const path &path)
+{
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
     using std::chrono::seconds;
