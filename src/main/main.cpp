@@ -58,7 +58,6 @@ int main(int argc, const char *argv[])
     cliex::cl::opts opts = cliex::cl::parse_argv(argc, argv);
 
     cliex::type_config type_config = setup_type_config();
-    auto ftypes = type_config.types();
 
     setlocale(LC_ALL, "");
     initscr();
