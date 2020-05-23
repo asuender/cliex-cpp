@@ -50,10 +50,12 @@ type_config type_config::read_from(istream &stream) noexcept
     vector<string> exts;
     size_t pos_equal;
     while (getline(stream, line)) {
+        size_t comment_pos = line.find_first_of("#;/");
+        if (comment_pos != string::npos) line.erase(comment_pos);
+
         line = utils::trim(line);
 
-        if (line.empty() || (line[0] == '/' || line[0] == '#' || line[0] == ';'))
-            continue;
+        if (line.empty()) continue;
 
         pos_equal = line.find('=');
         if(pos_equal == string::npos) continue;
