@@ -95,7 +95,7 @@ MENU *cliex::add_file_menu(
         return a < b;
     });
 
-    std::transform(choices.begin(), choices.end(), std::back_inserter(items), [current_dir](const std::string &s) -> ITEM * {
+    std::transform(choices.begin(), choices.end(), std::back_inserter(items), [&](const std::string &s) -> ITEM * {
         ITEM *item = new_item(s.c_str(), "");
         try
         {
