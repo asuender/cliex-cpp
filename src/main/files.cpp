@@ -49,48 +49,6 @@ static fs::file_time_type symlink_last_write_time(const fs::path &path)
     return clock::time_point(chrono::duration_cast<clock::duration>(dur));
 }
 
-fs::path cliex::get_root_path() noexcept
-{
-    return fs::absolute(fs::current_path()).root_path();
-}
-
-fs::path cliex::get_home_dir() noexcept
-{
-    const std::string HOME = getenv("HOME");
-    if(!HOME.empty()) return fs::absolute(HOME);
-
-    const std::string pw_dir = getpwuid(getuid())->pw_dir;
-    if(!pw_dir.empty()) return fs::absolute(pw_dir);
-
-    return fs::absolute(fs::current_path());
-}
-
-fs::path cliex::resolve(const fs::path &path)
-{
-    fs::path newpath;
-
-    for (const std::string &component : fs::absolute(path)) {
-        if (component == ".") continue;
-        if (component == "..")
-            newpath = newpath.parent_path();
-        else if (!component.empty())
-            newpath /= component;
-    }
-
-    return newpath;
-}
-
-bool cliex::has_access(const fs::path &path) noexcept
-{
-    const fs::path resolved_path = resolve(path);
-
-    int mask = R_OK;
-    if (fs::is_directory(resolved_path))
-        mask |= X_OK;
-
-    return (access(resolved_path.c_str(), mask) == 0); // TODO proper error handling
-}
-
 cliex::file_info cliex::get_file_info(
     const fs::path &path,
     const type_config &type_config)
@@ -217,6 +175,48 @@ cliex::file_info cliex::get_file_info(
             .size = size
         }
     };
+}
+
+bool cliex::has_access(const fs::path &path) noexcept
+{
+    const fs::path resolved_path = resolve(path);
+
+    int mask = R_OK;
+    if (fs::is_directory(resolved_path))
+        mask |= X_OK;
+
+    return (access(resolved_path.c_str(), mask) == 0); // TODO proper error handling
+}
+
+fs::path cliex::get_root_path() noexcept
+{
+    return fs::absolute(fs::current_path()).root_path();
+}
+
+fs::path cliex::get_home_dir() noexcept
+{
+    const std::string HOME = getenv("HOME");
+    if(!HOME.empty()) return fs::absolute(HOME);
+
+    const std::string pw_dir = getpwuid(getuid())->pw_dir;
+    if(!pw_dir.empty()) return fs::absolute(pw_dir);
+
+    return fs::absolute(fs::current_path());
+}
+
+fs::path cliex::resolve(const fs::path &path)
+{
+    fs::path newpath;
+
+    for (const std::string &component : fs::absolute(path)) {
+        if (component == ".") continue;
+        if (component == "..")
+            newpath = newpath.parent_path();
+        else if (!component.empty())
+            newpath /= component;
+    }
+
+    return newpath;
 }
 
 std::string cliex::perms_to_string(fs::perms perms) noexcept
