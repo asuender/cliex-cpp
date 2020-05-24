@@ -34,6 +34,7 @@
 #include <ncurses.h>
 
 #include "screen.hpp"
+#include "files.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -65,16 +66,8 @@ MENU *cliex::screen::add_file_menu(
 
     std::transform(choices.begin(), choices.end(), std::back_inserter(items), [&](const std::string &s) -> ITEM * {
         ITEM *item = new_item(s.c_str(), "");
-        try
-        {
-            const fs::path tmp = current_dir / s;
-            if (fs::is_directory(fs::symlink_status(tmp)))
-                fs::directory_iterator{tmp};
-        }
-        catch (...)
-        {
+        if (!has_access(current_dir / s))
             item_opts_off(item, O_SELECTABLE);
-        }
         return item;
     });
     items.emplace_back(nullptr);

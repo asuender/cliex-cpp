@@ -115,20 +115,17 @@ cliex::file_info cliex::get_file_info(
     }
 
     if (type == fs::file_type::directory) {
-        bool has_access = true;
+        bool has_access = cliex::has_access(path);
         size_t subdirsc = 0;
         size_t filesc = 0;
 
-        try {
+        if (has_access) {
             for (const auto &p : fs::directory_iterator(path)) {
                 if (fs::is_directory(p))
                     ++subdirsc;
                 else
                     ++filesc;
             }
-        }
-        catch(...) {
-            has_access = false;
         }
 
         return file_info {
