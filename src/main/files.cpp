@@ -45,7 +45,7 @@ static fs::file_time_type symlink_last_write_time(const fs::path &path)
     }
 
     auto dur = chrono::seconds(sb.st_mtim.tv_sec) +
-        chrono::nanoseconds(sb.st_mtim.tv_nsec);
+               chrono::nanoseconds(sb.st_mtim.tv_nsec);
     return clock::time_point(chrono::duration_cast<clock::duration>(dur));
 }
 
