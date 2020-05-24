@@ -38,7 +38,12 @@
 
 namespace fs = std::experimental::filesystem;
 
-WINDOW *cliex::screen::create_win(int height, int width, int starty, int startx, const std::string &title) noexcept
+WINDOW *cliex::screen::create_win(
+    int height,
+    int width,
+    int starty,
+    int startx,
+    const std::string &title) noexcept
 {
     WINDOW *win;
     win = newwin(height, width, starty, startx);
@@ -55,7 +60,6 @@ MENU *cliex::screen::add_file_menu(
     std::vector<ITEM *> &items,
     const fs::path &current_dir,
     unsigned int max_columns) noexcept
-
 {
     std::string current_dir_s = current_dir.string();
     unsigned longest = 0;

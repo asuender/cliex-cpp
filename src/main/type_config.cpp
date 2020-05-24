@@ -60,13 +60,15 @@ cliex::type_config cliex::type_config::read_from(std::istream &stream) noexcept
     return type_config(types);
 }
 
-cliex::type_config cliex::type_config::read_from(const std::string &file_path) noexcept
+cliex::type_config cliex::type_config::read_from(
+    const std::string &file_path) noexcept
 {
     std::ifstream stream(file_path);
     return read_from(stream);
 }
 
-void cliex::type_config::merge_with(const cliex::type_config &other_config) noexcept
+void cliex::type_config::merge_with(
+    const cliex::type_config &other_config) noexcept
 {
     for (const auto &pair : other_config._types) {
         if(this->_types.count(pair.first) > 0) continue;

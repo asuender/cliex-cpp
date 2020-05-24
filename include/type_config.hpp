@@ -30,7 +30,8 @@ namespace cliex {
         std::map<std::string, std::string> _types;
 
     public:
-        explicit inline type_config(const std::map<std::string, std::string> &types = {}) noexcept
+        explicit inline type_config(
+            const std::map<std::string, std::string> &types = {}) noexcept
             : _types(types)
         {}
         static type_config parse(const std::string &str) noexcept;

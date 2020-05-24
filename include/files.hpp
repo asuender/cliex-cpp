@@ -80,7 +80,8 @@ namespace cliex {
      *
      * Also makes sure that there will not be a trailing empty component.
      */
-    std::experimental::filesystem::path resolve(const std::experimental::filesystem::path &path);
+    std::experimental::filesystem::path resolve(
+        const std::experimental::filesystem::path &path);
 
     /**
      * Checks if the current user has read permissions for the given path.
@@ -94,7 +95,8 @@ namespace cliex {
         const std::experimental::filesystem::path &path,
         const type_config &type_config);
 
-    std::string perms_to_string(std::experimental::filesystem::perms perms) noexcept;
+    std::string perms_to_string(
+        std::experimental::filesystem::perms perms) noexcept;
 
     time_t file_time_type_to_time_t(
         const std::experimental::filesystem::file_time_type &time_point);
