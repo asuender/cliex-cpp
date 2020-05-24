@@ -142,7 +142,7 @@ cliex::file_info cliex::get_file_info(
 
     uintmax_t size = file_size(path);
 
-    bool executable = (perms & (fs::perms::owner_exec | fs::perms::group_exec | fs::perms::others_exec)) != fs::perms::none;
+    bool executable = is_exec(perms);
 
     auto types = type_config.types();
     auto it_f = types.find(path.filename());

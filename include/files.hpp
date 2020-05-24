@@ -95,6 +95,11 @@ namespace cliex {
     std::experimental::filesystem::path resolve(
         const std::experimental::filesystem::path &path);
 
+    constexpr bool is_exec(std::experimental::filesystem::perms perms) noexcept
+    {
+        return ((perms | (fs::perms::owner_exec | fs::perms::group_exec | fs::perms::others_exec)) != fs::perms::none);
+    }
+
     std::string perms_to_string(
         std::experimental::filesystem::perms perms) noexcept;
 
