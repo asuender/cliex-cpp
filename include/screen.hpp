@@ -32,11 +32,6 @@
 #include <vector>
 
 namespace cliex::screen {
-    void get_dir_content(
-        std::vector<std::string> &choices,
-        const std::experimental::filesystem::path &current_dir,
-        bool show_hidden_files);
-
     WINDOW *create_win(
         int height,
         int width,
