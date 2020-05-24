@@ -25,19 +25,14 @@
 #include <string>
 
 #include <vector>
-#include <map>
 
 #include <algorithm>
-
-#include <chrono>
 
 #include <experimental/filesystem>
 
 #include <menu.h>
 #include <ncurses.h>
 
-#include "cliex.hpp"
-#include "args.hpp"
 #include "screen.hpp"
 
 namespace fs = std::experimental::filesystem;
