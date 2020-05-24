@@ -109,7 +109,7 @@ cliex::file_info cliex::get_file_info(
             .perms = perms,
             .last_write_time = last_write_time,
             .extra_info = symlink_info {
-                .target = read_symlink(path)
+                .target = fs::read_symlink(path)
             }
         };
     }
