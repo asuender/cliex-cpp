@@ -30,8 +30,6 @@
 #include <vector>
 
 namespace cliex {
-    constexpr short color_pair_inaccessible_dir = 1;
-
     void get_dir_content(
         std::vector<std::string> &choices,
         const std::experimental::filesystem::path &current_dir,

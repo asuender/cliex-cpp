@@ -39,6 +39,8 @@
 #define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
 
 namespace cliex::screen {
+    constexpr short color_pair_inaccessible_dir = 1;
+
     WINDOW *create_win(
         int height,
         int width,
