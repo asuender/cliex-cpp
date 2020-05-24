@@ -282,6 +282,8 @@ void show_file_info(
     mvwaddstr(window, 7, 3, selected_file_size.c_str());
 
     // last write time
+    // FIXME only `chrono::system_clock` has `to_time_t`
+    //       this will fail on systems where `fs::file_time_type::clock` is not `chrono::system_clock`
     fs::file_time_type ftime = file_info.last_write_time;
     time_t cftime = fs::file_time_type::clock::to_time_t(ftime);
     std::string selected_file_last_write_time = "Last mod.: "s + std::asctime(std::localtime(&cftime));
