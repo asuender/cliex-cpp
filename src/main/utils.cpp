@@ -22,28 +22,29 @@
 #include <string>
 #include <vector>
 
-using std::find_if;
-using std::string;
-using std::vector;
-
-string cliex::utils::trim(const string &str, const string &trimchars) noexcept
+std::string cliex::utils::trim(
+    const std::string &str,
+    const std::string &trimchars) noexcept
 {
-    string result(str);
+    std::string result(str);
+
     size_t index = result.find_last_not_of(trimchars);
-    if (index != string::npos)
+    if (index != std::string::npos)
         result.erase(++index);
 
     index = result.find_first_not_of(trimchars);
-    if (index != string::npos)
+    if (index != std::string::npos)
         result.erase(0, index);
     else
         result.erase();
+
     return result;
 }
 
-vector<string> cliex::utils::split(const string &str) noexcept
+std::vector<std::string> cliex::utils::split(const std::string &str) noexcept
 {
-    vector<string> result;
+    std::vector<std::string> result;
+
     auto it = str.begin();
     while (it != str.end()) {
         it = find_if(it, str.end(), [](char c) {
@@ -53,8 +54,9 @@ vector<string> cliex::utils::split(const string &str) noexcept
             return isspace(c);
         });
         if (it != str.end())
-            result.push_back(string(it, jt));
+            result.push_back(std::string(it, jt));
         it = jt;
     }
+
     return result;
 }

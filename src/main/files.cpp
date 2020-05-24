@@ -31,31 +31,11 @@
 #include <unistd.h>
 
 namespace fs = std::experimental::filesystem;
-using cliex::dir_info;
-using cliex::file_info;
-using cliex::symlink_info;
-using cliex::type_config;
-using fs::absolute;
-using fs::current_path;
-using fs::directory_iterator;
-using fs::file_size;
-using fs::file_status;
-using fs::file_time_type;
-using fs::file_type;
-using fs::is_directory;
-using fs::path;
-using fs::perms;
-using fs::read_symlink;
-using fs::symlink_status;
-using std::function;
-using std::string;
+namespace chrono = std::chrono;
 
-static file_time_type symlink_last_write_time(const path &path)
+static fs::file_time_type symlink_last_write_time(const fs::path &path)
 {
-    using std::chrono::duration_cast;
-    using std::chrono::nanoseconds;
-    using std::chrono::seconds;
-    using clock = file_time_type::clock;
+    using clock = fs::file_time_type::clock;
 
     struct stat sb;
     if (lstat(path.c_str(), &sb) == -1) {
@@ -63,37 +43,38 @@ static file_time_type symlink_last_write_time(const path &path)
         exit(EXIT_FAILURE);
     }
 
-    auto dur = seconds(sb.st_mtim.tv_sec) + nanoseconds(sb.st_mtim.tv_nsec);
-    return clock::time_point(duration_cast<clock::duration>(dur));
+    auto dur = chrono::seconds(sb.st_mtim.tv_sec) +
+        chrono::nanoseconds(sb.st_mtim.tv_nsec);
+    return clock::time_point(chrono::duration_cast<clock::duration>(dur));
 }
 
-path cliex::get_root_path() noexcept
+fs::path cliex::get_root_path() noexcept
 {
-    return absolute(current_path()).root_path();
+    return fs::absolute(fs::current_path()).root_path();
 }
 
-path cliex::get_home_dir() noexcept
+fs::path cliex::get_home_dir() noexcept
 {
-    const string HOME = getenv("HOME");
-    if(!HOME.empty()) return absolute(HOME);
+    const std::string HOME = getenv("HOME");
+    if(!HOME.empty()) return fs::absolute(HOME);
 
-    const string pw_dir = getpwuid(getuid())->pw_dir;
-    if(!pw_dir.empty()) return absolute(pw_dir);
+    const std::string pw_dir = getpwuid(getuid())->pw_dir;
+    if(!pw_dir.empty()) return fs::absolute(pw_dir);
 
-    return absolute(current_path());
+    return fs::absolute(fs::current_path());
 }
 
-file_info cliex::get_file_info(
-    const path &path,
+cliex::file_info cliex::get_file_info(
+    const fs::path &path,
     const type_config &type_config)
 {
-    file_status stat = symlink_status(path);
-    string name = path.filename();
-    file_type type = stat.type();
-    perms perms = stat.permissions();
-    file_time_type last_write_time = symlink_last_write_time(path);
+    fs::file_status stat = fs::symlink_status(path);
+    std::string name = path.filename();
+    fs::file_type type = stat.type();
+    fs::perms perms = stat.permissions();
+    fs::file_time_type last_write_time = symlink_last_write_time(path);
 
-    if (type == file_type::symlink) {
+    if (type == fs::file_type::symlink) {
         return file_info {
             .name = name,
             .type_desc = "Symlink",
@@ -106,14 +87,14 @@ file_info cliex::get_file_info(
         };
     }
 
-    if (type == file_type::directory) {
+    if (type == fs::file_type::directory) {
         bool has_access = true;
         size_t subdirsc = 0;
         size_t filesc = 0;
 
         try {
-            for (const auto &p : directory_iterator(path)) {
-                if (is_directory(p))
+            for (const auto &p : fs::directory_iterator(path)) {
+                if (fs::is_directory(p))
                     ++subdirsc;
                 else
                     ++filesc;
@@ -137,29 +118,29 @@ file_info cliex::get_file_info(
         };
     }
 
-    string type_desc;
+    std::string type_desc;
 
-    if (type != file_type::regular) {
+    if (type != fs::file_type::regular) {
         switch (type) {
-        case file_type::block:
+        case fs::file_type::block:
             type_desc = "Block Device";
             break;
-        case file_type::character:
+        case fs::file_type::character:
             type_desc = "Character Device";
             break;
-        case file_type::fifo:
+        case fs::file_type::fifo:
             type_desc = "Named IPC Pipe";
             break;
-        case file_type::socket:
+        case fs::file_type::socket:
             type_desc = "Named IPC Socket";
             break;
-        case file_type::none:
+        case fs::file_type::none:
             type_desc = "None [ERROR STATE]";
             break;
-        case file_type::not_found:
+        case fs::file_type::not_found:
             type_desc = "Not Found [ERROR STATE]";
             break;
-        case file_type::unknown:
+        case fs::file_type::unknown:
             type_desc = "Unknown [ERROR STATE]";
             break;
         default:
@@ -179,7 +160,7 @@ file_info cliex::get_file_info(
 
     uintmax_t size = file_size(path);
 
-    bool executable = (perms & (perms::owner_exec | perms::group_exec | perms::others_exec)) != perms::none;
+    bool executable = (perms & (fs::perms::owner_exec | fs::perms::group_exec | fs::perms::others_exec)) != fs::perms::none;
 
     auto types = type_config.types();
     auto it_f = types.find(path.filename());
@@ -214,25 +195,25 @@ file_info cliex::get_file_info(
     };
 }
 
-string cliex::perms_to_string(perms perms) noexcept
+std::string cliex::perms_to_string(fs::perms perms) noexcept
 {
-    string str;
+    std::string str;
 
-    function<void(fs::perms, char)> tmp = [&](fs::perms test_perms, char c) {
+    std::function<void(fs::perms, char)> tmp = [&](fs::perms test_perms, char c) {
         str += (((perms & test_perms) == test_perms) ? c : '-');
     };
 
-    tmp(perms::owner_read, 'r');
-    tmp(perms::owner_write, 'w');
-    tmp(perms::owner_exec, 'x');
+    tmp(fs::perms::owner_read, 'r');
+    tmp(fs::perms::owner_write, 'w');
+    tmp(fs::perms::owner_exec, 'x');
 
-    tmp(perms::group_read, 'r');
-    tmp(perms::group_write, 'w');
-    tmp(perms::group_exec, 'x');
+    tmp(fs::perms::group_read, 'r');
+    tmp(fs::perms::group_write, 'w');
+    tmp(fs::perms::group_exec, 'x');
 
-    tmp(perms::others_read, 'r');
-    tmp(perms::others_write, 'w');
-    tmp(perms::others_exec, 'x');
+    tmp(fs::perms::others_read, 'r');
+    tmp(fs::perms::others_write, 'w');
+    tmp(fs::perms::others_exec, 'x');
 
     return str;
 }

@@ -26,39 +26,29 @@
 #include <string>
 #include <vector>
 
-using cliex::type_config;
-using std::getline;
-using std::ifstream;
-using std::istream;
-using std::istringstream;
-using std::map;
-using std::ostream;
-using std::string;
-using std::vector;
-
-type_config type_config::parse(const string &str) noexcept
+cliex::type_config cliex::type_config::parse(const std::string &str) noexcept
 {
-    istringstream s(str);
+    std::istringstream s(str);
     return read_from(s);
 }
 
-type_config type_config::read_from(istream &stream) noexcept
+cliex::type_config cliex::type_config::read_from(std::istream &stream) noexcept
 {
-    map<string, string> types;
+    std::map<std::string, std::string> types;
 
-    string line, desc;
-    vector<string> exts;
+    std::string line, desc;
+    std::vector<std::string> exts;
     size_t pos_equal;
-    while (getline(stream, line)) {
+    while (std::getline(stream, line)) {
         size_t comment_pos = line.find_first_of("#;/");
-        if (comment_pos != string::npos) line.erase(comment_pos);
+        if (comment_pos != std::string::npos) line.erase(comment_pos);
 
         line = utils::trim(line);
 
         if (line.empty()) continue;
 
         pos_equal = line.find('=');
-        if(pos_equal == string::npos) continue;
+        if(pos_equal == std::string::npos) continue;
 
         exts = utils::split(line.substr(0, pos_equal));
         desc = utils::trim(line.substr(pos_equal + 1));
@@ -70,13 +60,13 @@ type_config type_config::read_from(istream &stream) noexcept
     return type_config(types);
 }
 
-type_config type_config::read_from(const string &file_path) noexcept
+cliex::type_config cliex::type_config::read_from(const std::string &file_path) noexcept
 {
-    ifstream stream(file_path);
+    std::ifstream stream(file_path);
     return read_from(stream);
 }
 
-void type_config::merge_with(const type_config &other_config) noexcept
+void cliex::type_config::merge_with(const cliex::type_config &other_config) noexcept
 {
     for (const auto &pair : other_config._types) {
         if(this->_types.count(pair.first) > 0) continue;
@@ -84,14 +74,15 @@ void type_config::merge_with(const type_config &other_config) noexcept
     }
 }
 
-type_config type_config::merged_with(const type_config &other_config) const noexcept
+cliex::type_config cliex::type_config::merged_with(
+    const type_config &other_config) const noexcept
 {
     type_config ret(*this);
     ret.merge_with(other_config);
     return ret;
 }
 
-ostream &operator<<(ostream &stream, const type_config &config)
+std::ostream &operator<<(std::ostream &stream, const cliex::type_config &config)
 {
     for (const auto &pair : config.types()) {
         stream << pair.first << " = " << pair.second << '\n';

@@ -20,25 +20,20 @@
 #include <algorithm>
 #include <string>
 
-using cliex::cl::opts;
-using std::for_each;
-using std::stoi;
-using std::string;
-
-opts cliex::cl::parse_argv(int argc, const char *argv[]) noexcept
+cliex::cl::opts cliex::cl::parse_argv(int argc, const char *argv[]) noexcept
 {
     bool show_hidden_files = false;
     unsigned int max_columns = -1;
 
-    for_each(argv, argv + argc, [&](const std::string &arg) {
+    std::for_each(argv, argv + argc, [&](const std::string &arg) {
         if (arg.substr(0, 2) != "--") return;
 
         size_t pos_equal = arg.find('=');
-        string opt;
-        string opt_arg;
+        std::string opt;
+        std::string opt_arg;
 
         // check if option has argument
-        if (pos_equal == string::npos) {
+        if (pos_equal == std::string::npos) {
             opt = arg.substr(2);
         }
         else {
@@ -55,7 +50,7 @@ opts cliex::cl::parse_argv(int argc, const char *argv[]) noexcept
         }
         else if (opt == "max-columns") {
             try {
-                max_columns = stoi(opt_arg);
+                max_columns = std::stoi(opt_arg);
             }
             catch (...) {}
         }
