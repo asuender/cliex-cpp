@@ -20,6 +20,7 @@
 #define _FILES_HPP
 
 #include "type_config.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <experimental/filesystem>
 #include <string>

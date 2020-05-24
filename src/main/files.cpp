@@ -18,7 +18,9 @@
 
 #include "files.hpp"
 #include "type_config.hpp"
-#include <algorithm>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <experimental/filesystem>
 #include <functional>
@@ -40,20 +42,11 @@ using fs::file_size;
 using fs::file_status;
 using fs::file_time_type;
 using fs::file_type;
-using fs::is_block_file;
-using fs::is_character_file;
 using fs::is_directory;
-using fs::is_fifo;
-using fs::is_regular_file;
-using fs::is_socket;
-using fs::is_symlink;
-using fs::last_write_time;
 using fs::path;
 using fs::perms;
 using fs::read_symlink;
-using fs::status;
 using fs::symlink_status;
-using std::count_if;
 using std::function;
 using std::string;
 

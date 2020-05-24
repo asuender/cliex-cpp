@@ -17,16 +17,13 @@
  */
 
 #include "args.hpp"
-#include "utils.hpp"
 #include <algorithm>
 #include <string>
-#include <vector>
 
 using cliex::cl::opts;
 using std::for_each;
 using std::stoi;
 using std::string;
-using std::vector;
 
 opts cliex::cl::parse_argv(int argc, const char *argv[]) noexcept
 {

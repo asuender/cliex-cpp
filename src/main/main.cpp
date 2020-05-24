@@ -28,6 +28,7 @@
 #include "type_config.hpp"
 #include <algorithm>
 #include <array>
+#include <cstring>
 #include <experimental/filesystem>
 #include <fstream>
 #include <functional>
@@ -37,7 +38,6 @@
 #include <menu.h>
 #include <ncurses.h>
 #include <pwd.h>
-#include <string.h>
 #include <string>
 #include <sys/types.h>
 #include <unistd.h>
@@ -46,7 +46,6 @@
 
 namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
-using std::make_pair;
 
 cliex::type_config setup_type_config() noexcept;
 void show_file_info(
@@ -213,6 +212,8 @@ void show_file_info(
     WINDOW *window,
     const cliex::file_info &file_info) noexcept
 {
+    using std::make_pair;
+
     const std::array<std::string, 5> units {"Byte", "KB", "MB", "GB", "TB"};
     constexpr std::array<std::pair<int, int>, 6> window_info_positions {
         make_pair(3, 3),

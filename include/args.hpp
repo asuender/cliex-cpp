@@ -19,11 +19,6 @@
 #ifndef _ARGS_HPP
 #define _ARGS_HPP
 
-#include <cstddef>
-#include <string>
-#include <vector>
-#include <cstdint>
-
 namespace cliex::cl {
     struct opts {
         bool show_hidden_files;
