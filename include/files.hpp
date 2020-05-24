@@ -82,6 +82,14 @@ namespace cliex {
      */
     std::experimental::filesystem::path resolve(const std::experimental::filesystem::path &path);
 
+    /**
+     * Checks if the current user has read permissions for the given path.
+     *
+     * If the path is a directory, checks if the current user has read and
+     * execute permissions.
+     */
+    bool has_access(const std::experimental::filesystem::path &path) noexcept;
+
     file_info get_file_info(
         const std::experimental::filesystem::path &path,
         const type_config &type_config);

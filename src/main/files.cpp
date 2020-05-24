@@ -80,6 +80,17 @@ fs::path cliex::resolve(const fs::path &path)
     return newpath;
 }
 
+bool cliex::has_access(const fs::path &path) noexcept
+{
+    const fs::path resolved_path = resolve(path);
+
+    int mask = R_OK;
+    if (fs::is_directory(resolved_path))
+        mask |= X_OK;
+
+    return (access(resolved_path.c_str(), mask) == 0); // TODO proper error handling
+}
+
 cliex::file_info cliex::get_file_info(
     const fs::path &path,
     const type_config &type_config)
