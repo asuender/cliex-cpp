@@ -81,8 +81,9 @@ MENU *cliex::screen::add_file_menu(
     set_menu_sub(menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
 
     for (const auto &c : choices) {
-        if (c.length() > longest)
-            longest = c.length();
+        size_t len = (c.length() + 1);
+        if (len > longest)
+            longest = len;
     }
 
     set_menu_format(menu, LINES - 6, std::min(max_columns, SUB_WIDTH / longest));
