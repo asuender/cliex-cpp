@@ -65,6 +65,21 @@ fs::path cliex::get_home_dir() noexcept
     return fs::absolute(fs::current_path());
 }
 
+fs::path cliex::resolve(const fs::path &path)
+{
+    fs::path newpath = get_root_path();
+
+    for (const std::string &component : fs::absolute(path)) {
+        if (component == ".") continue;
+        if (component == "..")
+            newpath = newpath.parent_path();
+        else if (!component.empty())
+            newpath /= component;
+    }
+
+    return newpath;
+}
+
 cliex::file_info cliex::get_file_info(
     const fs::path &path,
     const type_config &type_config)

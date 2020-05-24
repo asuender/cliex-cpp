@@ -75,6 +75,13 @@ namespace cliex {
     std::experimental::filesystem::path get_root_path() noexcept;
     std::experimental::filesystem::path get_home_dir() noexcept;
 
+    /**
+     * Makes `path` absolutes and resolves "." and ".." path components.
+     *
+     * Also makes sure that there will not be a trailing empty component.
+     */
+    std::experimental::filesystem::path resolve(const std::experimental::filesystem::path &path);
+
     file_info get_file_info(
         const std::experimental::filesystem::path &path,
         const type_config &type_config);
