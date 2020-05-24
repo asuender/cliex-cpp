@@ -255,3 +255,17 @@ time_t cliex::file_time_type_to_time_t(const fs::file_time_type &time_point)
     system_clock::duration sc_dur = chrono::duration_cast<system_clock::duration>(fc_dur);
     return system_clock::to_time_t(system_clock::now() + sc_dur);
 }
+
+std::string cliex::get_type_indicator(fs::file_type file_type, fs::perms perms) noexcept
+{
+    // *INDENT-OFF*
+    switch (file_type) {
+    case fs::file_type::regular: return (is_exec(perms) ? "*" : "");
+    case fs::file_type::directory: return "/";
+    case fs::file_type::symlink: return "@";
+    case fs::file_type::socket: return "=";
+    case fs::file_type::fifo: return "|";
+    default: return "?";
+    }
+    // *INDENT-ON*
+}

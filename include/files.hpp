@@ -105,6 +105,10 @@ namespace cliex {
 
     time_t file_time_type_to_time_t(
         const std::experimental::filesystem::file_time_type &time_point);
+
+    std::string get_type_indicator(
+        std::experimental::filesystem::file_type file_type,
+        std::experimental::filesystem::perms perms) noexcept;
 }
 
 #endif /* _FILES_HPP */
