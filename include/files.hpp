@@ -22,6 +22,7 @@
 #include "type_config.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <ctime>
 #include <experimental/filesystem>
 #include <string>
 #include <variant>
@@ -79,6 +80,9 @@ namespace cliex {
         const type_config &type_config);
 
     std::string perms_to_string(std::experimental::filesystem::perms perms) noexcept;
+
+    time_t file_time_type_to_time_t(
+        const std::experimental::filesystem::file_time_type &time_point);
 }
 
 #endif /* _FILES_HPP */

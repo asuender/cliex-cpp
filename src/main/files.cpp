@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <ctime>
 #include <experimental/filesystem>
 #include <functional>
 #include <pwd.h>
@@ -216,4 +217,18 @@ std::string cliex::perms_to_string(fs::perms perms) noexcept
     tmp(fs::perms::others_exec, 'x');
 
     return str;
+}
+
+time_t cliex::file_time_type_to_time_t(const fs::file_time_type &time_point)
+{
+    using file_clock = fs::file_time_type::clock;
+    using system_clock = chrono::system_clock;
+
+    // <https://stackoverflow.com/a/18622684/9581962>
+    // i'm gonna be honest; i have not a single clue WHY or HOW this works, but
+    // it does and that makes me happy
+
+    file_clock::duration fc_dur = time_point - file_clock::now();
+    system_clock::duration sc_dur = chrono::duration_cast<system_clock::duration>(fc_dur);
+    return system_clock::to_time_t(system_clock::now() + sc_dur);
 }
