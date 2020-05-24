@@ -24,7 +24,6 @@
 
 using cliex::cl::opts;
 using std::for_each;
-using std::optional;
 using std::stoi;
 using std::string;
 using std::vector;

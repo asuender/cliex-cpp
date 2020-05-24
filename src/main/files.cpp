@@ -56,7 +56,6 @@ using fs::symlink_status;
 using std::count_if;
 using std::function;
 using std::string;
-using std::variant;
 
 static file_time_type symlink_last_write_time(const path &path)
 {
