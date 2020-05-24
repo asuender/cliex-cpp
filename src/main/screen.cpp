@@ -97,7 +97,7 @@ MENU *cliex::screen::add_file_menu(
     set_menu_mark(menu, "");
     set_menu_grey(menu, COLOR_PAIR(color_pair_inaccessible_dir));
 
-    wmove(win, 1, 18);
+    wmove(win, 1, 1);
     wclrtoeol(win);
     wattron(win, A_BOLD);
     mvwaddstr(win, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());

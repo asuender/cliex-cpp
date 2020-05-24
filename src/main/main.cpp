@@ -72,11 +72,12 @@ int main(int argc, const char *argv[])
     start_color();
     init_pair(cliex::color_pair_inaccessible_dir, COLOR_RED, -1);
 
-    WINDOW *explorer_win = cliex::screen::create_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
+    WINDOW *explorer_win = cliex::screen::create_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 2, 1, "");
     MENU *explorer_menu = nullptr;
 
     WINDOW *file_info_win = cliex::screen::create_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
 
+    mvaddstr(1, 3, "CLI File Explorer");
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
     std::vector<std::string> choices;
