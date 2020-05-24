@@ -29,13 +29,6 @@
 #include <string>
 #include <vector>
 
-#define EXPLORER_WIN_HEIGHT (LINES - 1)
-#define EXPLORER_WIN_WIDTH (COLS * 0.65)
-#define SUB_HEIGHT (LINES - 5)
-#define SUB_WIDTH (COLS * 0.65 - 5)
-#define PROPERTY_WIN_HEIGHT (LINES - 5)
-#define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
-
 namespace cliex {
     constexpr short color_pair_inaccessible_dir = 1;
 
