@@ -22,8 +22,9 @@
  * only contains the main function.
  */
 
-#include "args.hpp"
 #include "cliex.hpp"
+#include "args.hpp"
+#include "screen.hpp"
 #include "files.hpp"
 #include "type_config.hpp"
 #include <algorithm>
@@ -71,10 +72,10 @@ int main(int argc, const char *argv[])
     start_color();
     init_pair(cliex::color_pair_inaccessible_dir, COLOR_RED, -1);
 
-    WINDOW *explorer_win = cliex::create_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
+    WINDOW *explorer_win = cliex::screen::create_win(EXPLORER_WIN_HEIGHT, EXPLORER_WIN_WIDTH, 1, 1, "***** CLIEx *****");
     MENU *explorer_menu = nullptr;
 
-    WINDOW *file_info_win = cliex::create_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
+    WINDOW *file_info_win = cliex::screen::create_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
 
     mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
 
@@ -93,14 +94,14 @@ int main(int argc, const char *argv[])
                 !std::get<cliex::dir_info>(selected_file_info.extra_info).has_access) return;
 
         choices.clear();
-        cliex::clear_menu(explorer_menu, items);
+        cliex::screen::clear_menu(explorer_menu, items);
 
         cliex::get_dir_content(choices, newdir, opts.show_hidden_files);
         std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
             return a < b;
         });
 
-        explorer_menu = cliex::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
+        explorer_menu = cliex::screen::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
 
         current_dir = newdir;
         chdir(current_dir.c_str());
@@ -125,7 +126,9 @@ int main(int argc, const char *argv[])
 
         // refresh screen
         refresh();
+        box(explorer_win, 0, 0);
         wrefresh(explorer_win);
+        box(file_info_win, 0, 0);
         wrefresh(file_info_win);
 
         // wait for input and handle
@@ -168,7 +171,7 @@ int main(int argc, const char *argv[])
         }
     }
 
-    cliex::clear_menu(explorer_menu, items);
+    cliex::screen::clear_menu(explorer_menu, items);
     delwin(file_info_win);
     delwin(explorer_win);
     endwin();
