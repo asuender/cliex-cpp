@@ -31,12 +31,12 @@
 #include <string>
 #include <vector>
 
-#define EXPLORER_WIN_HEIGHT (LINES - 1)
-#define EXPLORER_WIN_WIDTH (COLS * 0.65)
-#define SUB_HEIGHT (LINES - 5)
-#define SUB_WIDTH (COLS * 0.65 - 5)
-#define PROPERTY_WIN_HEIGHT (LINES - 5)
-#define PROPERTY_WIN_WIDTH (COLS * 0.35 - 1)
+#define EXPLORER_WIN_HEIGHT ((int)(LINES - 1))
+#define EXPLORER_WIN_WIDTH ((int)(COLS * 0.65))
+#define SUB_HEIGHT ((int)(LINES - 5))
+#define SUB_WIDTH ((int)(COLS * 0.65 - 5))
+#define PROPERTY_WIN_HEIGHT ((int)(LINES - 5))
+#define PROPERTY_WIN_WIDTH ((int)(COLS * 0.35 - 1))
 
 namespace cliex::screen {
     constexpr short color_pair_inaccessible_dir = 1;
