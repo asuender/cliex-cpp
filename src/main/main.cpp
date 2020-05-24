@@ -127,9 +127,7 @@ int main(int argc, const char *argv[])
 
         // refresh screen
         refresh();
-        box(explorer_win, 0, 0);
         wrefresh(explorer_win);
-        box(file_info_win, 0, 0);
         wrefresh(file_info_win);
 
         // wait for input and handle
