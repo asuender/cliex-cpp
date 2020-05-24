@@ -22,10 +22,10 @@
  * only contains the main function.
  */
 
-#include "cliex.hpp"
 #include "args.hpp"
-#include "screen.hpp"
+#include "cliex.hpp"
 #include "files.hpp"
+#include "screen.hpp"
 #include "type_config.hpp"
 #include <algorithm>
 #include <array>
