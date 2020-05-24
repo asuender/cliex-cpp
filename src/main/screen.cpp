@@ -85,7 +85,7 @@ MENU *cliex::screen::add_file_menu(
             longest = c.length();
     }
 
-    set_menu_format(menu, LINES - 6, max_columns < SUB_WIDTH / longest ? max_columns : SUB_WIDTH / longest);
+    set_menu_format(menu, LINES - 6, std::min(max_columns, (unsigned)(SUB_WIDTH / longest)));
     set_menu_mark(menu, "");
     set_menu_grey(menu, COLOR_PAIR(color_pair_inaccessible_dir));
 
