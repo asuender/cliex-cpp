@@ -67,7 +67,7 @@ fs::path cliex::get_home_dir() noexcept
 
 fs::path cliex::resolve(const fs::path &path)
 {
-    fs::path newpath = get_root_path();
+    fs::path newpath;
 
     for (const std::string &component : fs::absolute(path)) {
         if (component == ".") continue;
