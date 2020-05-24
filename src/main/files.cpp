@@ -30,8 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-namespace fs = std::experimental::filesystem;
 namespace chrono = std::chrono;
+namespace fs = std::experimental::filesystem;
 
 static fs::file_time_type symlink_last_write_time(const fs::path &path)
 {
