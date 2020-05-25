@@ -28,25 +28,22 @@
 #include "type_config.hpp"
 #include <algorithm>
 #include <array>
+#include <clocale>
+#include <cstddef>
+#include <cstdint>
 #include <cstring>
+#include <ctime>
 #include <experimental/filesystem>
 #include <fstream>
 #include <functional>
-#include <iostream>
-#include <iterator>
-#include <map>
 #include <menu.h>
 #include <ncurses.h>
-#include <pwd.h>
 #include <string>
-#include <sys/types.h>
 #include <unistd.h>
 #include <variant>
 #include <vector>
 
-namespace chrono = std::chrono;
 namespace fs = std::experimental::filesystem;
-using std::literals::string_literals::operator""s;
 
 cliex::type_config setup_type_config() noexcept;
 void update_explorer_window(
@@ -295,6 +292,7 @@ void update_file_info_window(
     WINDOW *window,
     const cliex::file_info &file_info) noexcept
 {
+    using namespace std::string_literals;
     using std::make_pair;
 
     // TODO maybe do something with std::ratio ?
@@ -375,7 +373,7 @@ void update_file_info_window(
     if (file_info.type == fs::file_type::symlink) {
         cliex::symlink_info symlink_info = std::get<cliex::symlink_info>(file_info.extra_info);
 
-        std::string selected_file_symlink_target = "Symlink target: "s + symlink_info.target.string();
+        std::string selected_file_symlink_target = "Symlink target: " + symlink_info.target.string();
         mvwaddstr(window, 10, 3, selected_file_symlink_target.c_str());
     }
 

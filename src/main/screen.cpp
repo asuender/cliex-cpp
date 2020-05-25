@@ -22,21 +22,11 @@
  * Definitions of all functions used to print to the screen.
 */
 
-#include <string>
-
-#include <vector>
-
-#include <algorithm>
-
-#include <experimental/filesystem>
-
+#include "screen.hpp"
 #include <menu.h>
 #include <ncurses.h>
-
-#include "screen.hpp"
-#include "files.hpp"
-
-namespace fs = std::experimental::filesystem;
+#include <string>
+#include <vector>
 
 WINDOW *cliex::screen::create_win(
     int height,
