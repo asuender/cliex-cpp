@@ -16,6 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>
  */
 
+/**
+ * args.hpp
+ *
+ * Structs and functions related to the command line.
+ */
+
 #ifndef _ARGS_HPP
 #define _ARGS_HPP
 

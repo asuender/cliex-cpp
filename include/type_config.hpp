@@ -16,6 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>
  */
 
+/**
+ * type_config.hpp
+ *
+ * The type_config class.
+ */
+
 #ifndef _TYPE_CONFIG_HPP
 #define _TYPE_CONFIG_HPP
 

@@ -19,7 +19,7 @@
 /**
  * screen.hpp
  *
- * Declarations of all functions used to print to the screen.
+ * Constants and functions related to helping with ncurses stuff.
  */
 
 #ifndef _SCREEN_HPP

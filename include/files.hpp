@@ -16,6 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>
  */
 
+/**
+ * files.hpp
+ *
+ * Structs & functions related to working with and on files and paths.
+ */
+
 #ifndef _FILES_HPP
 #define _FILES_HPP
 

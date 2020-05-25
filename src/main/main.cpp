@@ -17,9 +17,9 @@
  */
 
 /**
- * cliex.cpp
+ * main.cpp
  *
- * only contains the main function.
+ * Main program file, works mostly with ncurses.
  */
 
 #include "args.hpp"

@@ -22,6 +22,12 @@
 #include <string>
 #include <vector>
 
+/**
+ * utils.hpp
+ *
+ * General utility functions.
+ */
+
 namespace cliex::utils {
     std::string trim(
         const std::string &str,
