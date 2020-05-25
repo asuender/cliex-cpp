@@ -47,10 +47,10 @@ std::vector<std::string> cliex::utils::split(const std::string &str) noexcept
 
     auto it = str.begin();
     while (it != str.end()) {
-        it = find_if(it, str.end(), [](char c) {
+        it = std::find_if(it, str.end(), [](char c) {
             return !isspace(c);
         });
-        auto jt = find_if(it, str.end(), [](char c) {
+        auto jt = std::find_if(it, str.end(), [](char c) {
             return isspace(c);
         });
         if (it != str.end())
