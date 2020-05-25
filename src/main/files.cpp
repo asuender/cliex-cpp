@@ -278,7 +278,7 @@ time_t cliex::file_time_type_to_time_t(const fs::file_time_type &time_point)
 
     file_clock::duration fc_dur = time_point - file_clock::now();
     system_clock::duration sc_dur = chrono::duration_cast<system_clock::duration>(fc_dur);
-    return system_clock::to_time_t(system_clock::now() + sc_dur);
+    return system_clock::to_time_t(sc_dur + system_clock::now());
 }
 
 std::string cliex::get_type_indicator(fs::file_type file_type, fs::perms perms) noexcept
