@@ -177,6 +177,31 @@ cliex::file_info cliex::get_file_info(
     };
 }
 
+std::vector<std::string> cliex::get_dir_contents(
+    const fs::path &dir,
+    bool show_hidden_files,
+    bool include_current_dir)
+{
+    if (!is_directory(dir)) return {};
+
+    std::vector<std::string> contents;
+
+    for (const fs::path &path : fs::directory_iterator(dir)) {
+        std::string filename = path.filename();
+        if (filename.substr(0, 1) != "." || show_hidden_files)
+            contents.emplace_back(filename);
+    }
+
+    // sort BEFORE adding "." and ".." so that they will always be the first elements
+
+    std::sort(contents.begin(), contents.end());
+
+    if (dir != get_root_path()) contents.emplace(contents.begin(), "..");
+    if (include_current_dir) contents.emplace(contents.begin(), ".");
+
+    return contents;
+}
+
 bool cliex::has_access(const fs::path &path) noexcept
 {
     const fs::path resolved_path = resolve(path);

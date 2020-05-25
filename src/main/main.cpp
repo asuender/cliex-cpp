@@ -23,7 +23,6 @@
  */
 
 #include "args.hpp"
-#include "cliex.hpp"
 #include "files.hpp"
 #include "screen.hpp"
 #include "type_config.hpp"
@@ -50,17 +49,27 @@ namespace fs = std::experimental::filesystem;
 using std::literals::string_literals::operator""s;
 
 cliex::type_config setup_type_config() noexcept;
-void show_file_info(
+void update_explorer_window(
+    WINDOW *window,
+    MENU *menu,
+    const fs::path &current_dir,
+    std::vector<ITEM *> &items,
+    unsigned int max_columns) noexcept;
+void update_file_info_window(
     WINDOW *window,
     const cliex::file_info &file_info) noexcept;
 
 int main(int argc, const char *argv[])
 {
-    cliex::cl::opts opts = cliex::cl::parse_argv(argc, argv);
+    const cliex::cl::opts opts = cliex::cl::parse_argv(argc, argv);
 
-    cliex::type_config type_config = setup_type_config();
+    const cliex::type_config type_config = setup_type_config();
+
+    // === screen, window & menu setup ====================================== //
 
     setlocale(LC_ALL, "");
+
+    // ncurses setup
     initscr();
     clear();
     noecho();
@@ -73,65 +82,98 @@ int main(int argc, const char *argv[])
     start_color();
     init_pair(cliex::screen::color_pair_inaccessible_dir, COLOR_RED, -1);
 
-    WINDOW *explorer_win = cliex::screen::create_win(EXPLORER_WIN_HEIGHT-1, EXPLORER_WIN_WIDTH, 2, 1, "");
-    MENU *explorer_menu = nullptr;
+    std::vector<ITEM *> items = {nullptr};
+
+    WINDOW *explorer_win = cliex::screen::create_win(EXPLORER_WIN_HEIGHT - 1, EXPLORER_WIN_WIDTH, 2, 1, "");
+    MENU *explorer_menu = new_menu(items.data());
+    set_menu_win(explorer_menu, explorer_win);
+    set_menu_sub(explorer_menu, derwin(explorer_win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
+    set_menu_mark(explorer_menu, "");
+    set_menu_grey(explorer_menu, COLOR_PAIR(cliex::screen::color_pair_inaccessible_dir));
 
     WINDOW *file_info_win = cliex::screen::create_win(PROPERTY_WIN_HEIGHT, PROPERTY_WIN_WIDTH, 1, EXPLORER_WIN_WIDTH + 2, "File Information");
 
     mvaddstr(1, 3, "CLI File Explorer");
-    mvaddstr(LINES - 2, SUB_WIDTH + 7, ("Quit by pressing q."));
+    mvaddstr(LINES - 2, SUB_WIDTH + 7, "Quit by pressing q.");
 
-    std::vector<std::string> choices;
-    std::vector<ITEM *> items;
-    cliex::file_info selected_file_info;
+    // === data setup ======================================================= //
+
+    // explorer window
     fs::path current_dir;
+    std::vector<std::string> current_dir_contents;
 
-    std::function<const std::string &()> get_selected = [&]() -> const std::string & {
-        return choices[item_index(current_item(explorer_menu))];
-    };
+    // file info window
+    cliex::file_info selected_file_info;
 
-    std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
-        if (!fs::is_directory(newdir) ||
-                selected_file_info.type != fs::file_type::directory ||
-                !std::get<cliex::dir_info>(selected_file_info.extra_info).has_access) return;
+    const std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
+        fs::path resolved_newdir = cliex::resolve(newdir);
 
-        choices.clear();
-        cliex::screen::clear_menu(explorer_menu, items);
+        if (!fs::is_directory(resolved_newdir) ||
+                !cliex::has_access(resolved_newdir)) return;
 
-        cliex::get_dir_content(choices, newdir, opts.show_hidden_files);
-        std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
-            return a < b;
-        });
-
-        explorer_menu = cliex::screen::add_file_menu(explorer_win, choices, items, newdir, opts.max_columns);
-
-        current_dir = newdir;
+        current_dir = resolved_newdir;
         chdir(current_dir.c_str());
+
+        current_dir_contents = cliex::get_dir_contents(current_dir, opts.show_hidden_files);
+
+        cliex::screen::clear_items(items);
+        std::transform(
+            current_dir_contents.begin(),
+            current_dir_contents.end(),
+            std::back_inserter(items),
+            // *INDENT-OFF*
+            [&](const std::string &s) -> ITEM * {
+                fs::file_status status = fs::status(current_dir / s);
+                std::string indicator = cliex::get_type_indicator(
+                    status.type(),
+                    status.permissions());
+
+                // it's important that we allocate the name of the item, since
+                // we're building an entirely new string here that would get
+                // destroyed at the end of this lambda and we don't want to add
+                // the indicator to our `current_dir_contents` vector because in
+                // there are the actual file names
+
+                std::string item_name = (s + indicator);
+                char *item_name_cstr = new char[item_name.length()];
+                strcpy(item_name_cstr, item_name.c_str());
+
+                ITEM *item = new_item(item_name_cstr, "");
+
+                if (!cliex::has_access(current_dir / s))
+                    item_opts_off(item, O_SELECTABLE);
+
+                return item;
+            });
+        // *INDENT-ON*
+        items.emplace_back(nullptr);
+
+        update_explorer_window(
+            explorer_win,
+            explorer_menu,
+            current_dir,
+            items,
+            opts.max_columns);
     };
 
-    {
-        fs::path home_dir = cliex::get_home_dir();
-        selected_file_info = cliex::get_file_info(home_dir, type_config);
-        change_dir(home_dir);
-    }
+    // initial directory to start off on
+    change_dir(cliex::get_home_dir());
+
+    // === main loop ======================================================== //
 
     for (bool running = true; running; ) {
+        const fs::path selected_path = current_dir / current_dir_contents[item_index(current_item(explorer_menu))];
+
         // show file info
-        {
-            fs::path tmp = current_dir / get_selected();
-            // this is needed because directory items have a slash at the end of
-            // their names. that should probably be changed TODO
-            if (tmp.filename() == ".") tmp = tmp.parent_path();
-            selected_file_info = cliex::get_file_info(tmp, type_config);
-        }
-        show_file_info(file_info_win, selected_file_info);
+        selected_file_info = cliex::get_file_info(selected_path, type_config);
+        update_file_info_window(file_info_win, selected_file_info);
 
         // refresh screen
         refresh();
         wrefresh(explorer_win);
         wrefresh(file_info_win);
 
-        // wait for input and handle
+        // wait for input and handle it
         switch (getch()) {
         case KEY_DOWN:
             menu_driver(explorer_menu, REQ_DOWN_ITEM);
@@ -154,24 +196,20 @@ int main(int argc, const char *argv[])
         case 'q':
             running = false;
             break;
-        case '\n': {
-            std::string selected = get_selected();
-            if (selected == "..") {
-                change_dir(current_dir.parent_path());
-            }
-            else if (*(selected.end()-1) == '/') {
-                selected.erase(selected.end()-1);
-                change_dir(current_dir / selected);
-            }
+        case '\n':
+            change_dir(selected_path);
             break;
-        }
         case KEY_BACKSPACE:
             change_dir(current_dir.parent_path());
             break;
         }
     }
 
-    cliex::screen::clear_menu(explorer_menu, items);
+    // === freeing up memory ================================================ //
+
+    unpost_menu(explorer_menu);
+    free_menu(explorer_menu);
+    cliex::screen::clear_items(items);
     delwin(file_info_win);
     delwin(explorer_win);
     endwin();
@@ -211,12 +249,55 @@ cliex::type_config setup_type_config() noexcept
     return user_type_config;
 }
 
-void show_file_info(
+void update_explorer_window(
+    WINDOW *window,
+    MENU *menu,
+    const fs::path &current_dir,
+    std::vector<ITEM *> &items,
+    unsigned int max_requested_columns) noexcept
+{
+    size_t longest_item_len = 0;
+    for (ITEM *item : items) {
+        if (item == nullptr) continue;
+
+        size_t len = (strlen(item_name(item)) + 1);
+        if (len > longest_item_len)
+            longest_item_len = len;
+    }
+    const unsigned int max_displayable_columns = SUB_WIDTH / longest_item_len;
+
+    wclear(window);
+
+    unpost_menu(menu);
+
+    // current dir
+    wattron(window, A_BOLD);
+    mvwaddstr(
+        window,
+        1,
+        EXPLORER_WIN_WIDTH - current_dir.string().length() - 2,
+        current_dir.c_str());
+    wattroff(window, A_BOLD);
+
+    // items
+    set_menu_items(menu, items.data());
+    set_menu_format(
+        menu,
+        LINES - 6,
+        std::min(max_requested_columns, max_displayable_columns));
+
+    box(window, 0, 0);
+
+    post_menu(menu);
+}
+
+void update_file_info_window(
     WINDOW *window,
     const cliex::file_info &file_info) noexcept
 {
     using std::make_pair;
 
+    // TODO maybe do something with std::ratio ?
     const std::array<std::string, 5> units {"Byte", "KB", "MB", "GB", "TB"};
     constexpr std::array<std::pair<int, int>, 6> window_info_positions {
         make_pair(3, 3),

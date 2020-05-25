@@ -48,14 +48,7 @@ namespace cliex::screen {
         int startx,
         const std::string &title) noexcept;
 
-    MENU *add_file_menu(
-        WINDOW *win,
-        std::vector<std::string> &choices,
-        std::vector<ITEM *> &items,
-        const std::experimental::filesystem::path &current_dir,
-        unsigned int max_columns) noexcept;
-
-    void clear_menu(MENU *menu, std::vector<ITEM *> &items) noexcept;
+    void clear_items(std::vector<ITEM *> &items) noexcept;
 }
 
 #endif /* _SCREEN_HPP */

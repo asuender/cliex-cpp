@@ -54,59 +54,14 @@ WINDOW *cliex::screen::create_win(
     return win;
 }
 
-MENU *cliex::screen::add_file_menu(
-    WINDOW *win,
-    std::vector<std::string> &choices,
-    std::vector<ITEM *> &items,
-    const fs::path &current_dir,
-    unsigned int max_columns) noexcept
+void cliex::screen::clear_items(std::vector<ITEM *> &items) noexcept
 {
-    std::string current_dir_s = current_dir.string();
-    unsigned longest = 0;
+    for (ITEM *item : items) {
+        if (item == nullptr) continue;
 
-    std::sort(choices.begin(), choices.end(), [](const std::string &a, const std::string &b) {
-        return a < b;
-    });
-
-    std::transform(choices.begin(), choices.end(), std::back_inserter(items), [&](const std::string &s) -> ITEM * {
-        ITEM *item = new_item(s.c_str(), "");
-        if (!has_access(current_dir / s))
-            item_opts_off(item, O_SELECTABLE);
-        return item;
-    });
-    items.emplace_back(nullptr);
-
-    MENU *menu = new_menu(const_cast<ITEM **>(items.data()));
-    set_menu_win(menu, win);
-    set_menu_sub(menu, derwin(win, SUB_HEIGHT, SUB_WIDTH, 3, 3));
-
-    for (const auto &c : choices) {
-        size_t len = (c.length() + 1);
-        if (len > longest)
-            longest = len;
+        const char *name = item_name(item);
+        free_item(item);
+        delete[] name;
     }
-
-    set_menu_format(menu, LINES - 6, std::min(max_columns, SUB_WIDTH / longest));
-    set_menu_mark(menu, "");
-    set_menu_grey(menu, COLOR_PAIR(color_pair_inaccessible_dir));
-
-    wmove(win, 1, 1);
-    wclrtoeol(win);
-    wattron(win, A_BOLD);
-    mvwaddstr(win, 1, EXPLORER_WIN_WIDTH - current_dir_s.length() - 2, current_dir_s.c_str());
-    wattroff(win, A_BOLD);
-
-    box(win, 0, 0);
-
-    post_menu(menu);
-    return menu;
-}
-
-void cliex::screen::clear_menu(MENU *menu, std::vector<ITEM *> &items) noexcept
-{
-    // TODO use the `menu_items` function and remove the `items` parameter
-    unpost_menu(menu);
-    std::for_each(items.begin(), items.end(), free_item);
     items.clear();
-    free_menu(menu);
 }

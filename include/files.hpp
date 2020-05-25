@@ -76,6 +76,11 @@ namespace cliex {
         const std::experimental::filesystem::path &path,
         const type_config &type_config);
 
+    std::vector<std::string> get_dir_contents(
+        const std::experimental::filesystem::path &dir,
+        bool show_hidden_files = false,
+        bool include_current_dir = false);
+
     /**
      * Checks if the current user has read permissions for the given path.
      *
