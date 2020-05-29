@@ -26,6 +26,8 @@
 #include "files.hpp"
 #include "screen.hpp"
 #include "type_config.hpp"
+#include "extsys.hpp"
+#include "../exts/exts.hpp"
 #include <algorithm>
 #include <array>
 #include <clocale>
@@ -152,6 +154,10 @@ int main(int argc, const char *argv[])
             items,
             opts.max_columns);
     };
+    
+    const std::function<void(const fs::path &newdir)> open_ext = [&](const fs::path &newdir) {
+    	;
+    };
 
     // initial directory to start off on
     change_dir(cliex::get_home_dir());
@@ -194,7 +200,11 @@ int main(int argc, const char *argv[])
             running = false;
             break;
         case '\n':
-            change_dir(selected_path);
+        	if(fs::is_directory(selected_path)){//TODO: actual isdir and isfile function please
+	            change_dir(selected_path);
+	        }else if(fs::is_file(selected_path)){
+	        	open_ext(selected_path);
+	        }
             break;
         case KEY_BACKSPACE:
             change_dir(current_dir.parent_path());
