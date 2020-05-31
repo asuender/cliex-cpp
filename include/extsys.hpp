@@ -49,7 +49,7 @@ namespace cliex::exts{
 #include "../src/exts/cliap.cpp"
 
 namespace cliex::exts{
-	void initAllExtensions(){
+	void init(){
 		CLIAP cliap;
 		extlist.push_back(&cliap);
 	}

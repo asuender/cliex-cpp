@@ -103,8 +103,9 @@ int main(int argc, const char *argv[])
     // file info window
     cliex::file_info selected_file_info;
     
-    // current extension
-    cliex::exts::BaseExtension* crext=nullptr;
+    // initialize extension system
+    cliex::exts::BaseExtension* crext=nullptr;//current extension
+    cliex::exts::init();
 
     const std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
         fs::path resolved_newdir = cliex::resolve(newdir);
@@ -187,7 +188,7 @@ int main(int argc, const char *argv[])
     	if(crext!=nullptr){
     		WINDOW* extwin=cliex::screen::create_win(LINES,COLS,0,0,crext->name);//TODO: actually create the window properly
     		crext->setFile(fp);
-    		crext->initScreen(extwin);
+    		crext->initWin(extwin);
     		crext->updateWin();
     	}
     };
