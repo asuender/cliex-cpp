@@ -27,7 +27,6 @@
 #include "screen.hpp"
 #include "type_config.hpp"
 #include "extsys.hpp"
-#include "../exts/exts.hpp"
 #include <algorithm>
 #include <array>
 #include <clocale>
@@ -103,6 +102,9 @@ int main(int argc, const char *argv[])
 
     // file info window
     cliex::file_info selected_file_info;
+    
+    // current extension
+    cliex::exts::BaseExtension* crext=nullptr;
 
     const std::function<void(const fs::path &newdir)> change_dir = [&](const fs::path &newdir) {
         fs::path resolved_newdir = cliex::resolve(newdir);
@@ -155,8 +157,39 @@ int main(int argc, const char *argv[])
             opts.max_columns);
     };
     
-    const std::function<void(const fs::path &newdir)> open_ext = [&](const fs::path &newdir) {
-    	;
+    const std::function<void(const fs::path &fp)> open_ext = [&](const fs::path &fp) {
+    	fs::path resolved_fp = cliex::resolve(fp);
+    	if (!fs::is_regular_file(resolved_fp) ||
+                !cliex::has_access(resolved_fp)) return;
+        
+        crext=nullptr;//initialize current extension as a nullpointer
+        const char* fpca=fp.c_str();//file path chararray
+        uint8_t fpcas=sizeof(fpca);//fpca size
+        uint8_t fpcasd;//fpcas difference (difference between fpcas & fes to be precise)
+        uint8_t fes;//file extension size
+        uint8_t i;//index
+    	for(cliex::exts::BaseExtension* ext: cliex::exts::extlist){//check every extension for file compatibility and then set crext
+    		for(const char* fe: ext->supexts){
+    			fes=sizeof(fe);
+    			fpcasd=fpcas-fes;
+    			if(fpcasd<2)//the first dot isn't present in the exts so there have to be at least 2 additional characters for it to be the extension.
+    				continue;
+    			for(i=0;i<fes;i++){
+    				if(fe[i]==fpca[i+fpcasd])
+    					crext=ext;
+    			}
+    			if(crext!=nullptr)
+    				break;
+    		}
+    		if(crext!=nullptr)
+    			break;
+    	}
+    	if(crext!=nullptr){
+    		WINDOW* extwin=cliex::screen::create_win(LINES,COLS,0,0,crext->name);//TODO: actually create the window properly
+    		crext->setFile(fp);
+    		crext->initScreen(extwin);
+    		crext->updateWin();
+    	}
     };
 
     // initial directory to start off on
@@ -165,53 +198,63 @@ int main(int argc, const char *argv[])
     // === main loop ======================================================== //
 
     for (bool running = true; running; ) {
-        const fs::path selected_path = current_dir / current_dir_contents[item_index(current_item(explorer_menu))];
+    	if(crext==nullptr){//if no extension is loaded
+		    const fs::path selected_path = current_dir / current_dir_contents[item_index(current_item(explorer_menu))];
 
-        // show file info
-        selected_file_info = cliex::get_file_info(selected_path, type_config);
-        update_file_info_window(file_info_win, selected_file_info);
+		    // show file info
+		    selected_file_info = cliex::get_file_info(selected_path, type_config);
+		    update_file_info_window(file_info_win, selected_file_info);
 
-        // refresh screen
-        refresh();
-        wrefresh(explorer_win);
-        wrefresh(file_info_win);
+		    // refresh screen
+		    refresh();
+		    wrefresh(explorer_win);
+		    wrefresh(file_info_win);
 
-        // wait for input and handle it
-        switch (getch()) {
-        case KEY_DOWN:
-            menu_driver(explorer_menu, REQ_DOWN_ITEM);
-            break;
-        case KEY_UP:
-            menu_driver(explorer_menu, REQ_UP_ITEM);
-            break;
-        case KEY_RIGHT:
-            menu_driver(explorer_menu, REQ_RIGHT_ITEM);
-            break;
-        case KEY_LEFT:
-            menu_driver(explorer_menu, REQ_LEFT_ITEM);
-            break;
-        case KEY_NPAGE:
-            menu_driver(explorer_menu, REQ_SCR_DPAGE);
-            break;
-        case KEY_PPAGE:
-            menu_driver(explorer_menu, REQ_SCR_UPAGE);
-            break;
-        case 'q':
-            running = false;
-            break;
-        case '\n':
-        	if(fs::is_directory(selected_path)){//TODO: actual isdir and isfile function please
-	            change_dir(selected_path);
-	        }else if(fs::is_file(selected_path)){
-	        	open_ext(selected_path);
-	        }
-            break;
-        case KEY_BACKSPACE:
-            change_dir(current_dir.parent_path());
-            break;
-        }
-    }
-
+		    // wait for input and handle it
+		    switch (getch()) {
+		    case KEY_DOWN:
+		        menu_driver(explorer_menu, REQ_DOWN_ITEM);
+		        break;
+		    case KEY_UP:
+		        menu_driver(explorer_menu, REQ_UP_ITEM);
+		        break;
+		    case KEY_RIGHT:
+		        menu_driver(explorer_menu, REQ_RIGHT_ITEM);
+		        break;
+		    case KEY_LEFT:
+		        menu_driver(explorer_menu, REQ_LEFT_ITEM);
+		        break;
+		    case KEY_NPAGE:
+		        menu_driver(explorer_menu, REQ_SCR_DPAGE);
+		        break;
+		    case KEY_PPAGE:
+		        menu_driver(explorer_menu, REQ_SCR_UPAGE);
+		        break;
+		    case 'q':
+		        running = false;
+		        break;
+		    case '\n':
+		    	if(fs::is_directory(selected_path)){
+			        change_dir(selected_path);
+			    }else if(fs::is_regular_file(selected_path)){
+			    	open_ext(selected_path);
+			    }
+		        break;
+		    case KEY_BACKSPACE:
+		        change_dir(current_dir.parent_path());
+		        break;
+		    }
+		}else{//if an extension is loaded
+			int key=getch();
+			switch(key){
+				case '\033'://exit extension with ESC
+					;//TODO: actually clean up extension stuff like its window and stuff
+					break;
+				default:
+					crext->keyPressCallback(key);
+			}
+		}
+	}
     // === freeing up memory ================================================ //
 
     unpost_menu(explorer_menu);

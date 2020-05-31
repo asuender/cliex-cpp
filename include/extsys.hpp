@@ -1,19 +1,18 @@
 #include "files.hpp"
 #include <vector>
 
-namespace fs = std::experimental::filesystem;//TODO: put that in files.hpp please
-
 #ifndef _EXTSYS_HPP
 #define _EXTSYS_HPP
+
+namespace fs = std::experimental::filesystem;//TODO: put that in files.hpp please
+
 namespace cliex::exts{
 	class BaseExtension{
-		protected:
-			fs::path fp;//!< Path to file that is assigned to this Extension
-			static constexpr const char* supexts[]={};//!< file extensions that can be opened by this extension
-			static constexpr const char* name="BaseExtension";
-			int scw;//!< Screen Width
-			int sch;//!< Screen Height
 		public:
+			fs::path fp;//!< Path to file that is assigned to this Extension
+			static constexpr const char* name="BaseExtension";
+			static constexpr const char* supexts[]={};//!< file extensions that can be opened by this extension
+			WINDOW* win=nullptr;
 			/**
 			 * Sets the file path for the plugin to load
 			 * Loading the file can occur here or later, when open() gets called, it doesn't matter, really
@@ -23,27 +22,20 @@ namespace cliex::exts{
 				this->fp=fp;
 			}
 			/**
-			 * Sets the screen size for the extension to use
-			 * @param w Screen Width
-			 * @param h Screen Height
-			 */
-			void setScreenSize(uint16_t w,uint16_t h){
-				this->sch=h;
-				this->scw=w;
-			}
-			/**
 			 * Initializes the Screen and any variables of use for this extension
 			 */
-			void initScreen();
+			void initWin(WINDOW* win){
+				this->win=win;
+			}
 			/**
-			 * Draws the frame of the extension
+			 * Updates the window of the extension
 			 */
-			void drawFrame();
+			void updateWin();
 			/**
 			 * Callback for when a key gets pressed
 			 * @param key the key that got pressed
 			 */
-			void keyPressCallback(char key);
+			void keyPressCallback(int key);
 			/**
 			 * Object initializer
 			 * @param fp File path that the extension should open
@@ -51,5 +43,15 @@ namespace cliex::exts{
 			BaseExtension();
 	};
 	std::vector<BaseExtension*> extlist={};
+}
+
+//include extensions here
+#include "../src/exts/cliap.cpp"
+
+namespace cliex::exts{
+	void initAllExtensions(){
+		CLIAP cliap;
+		extlist.push_back(&cliap);
+	}
 }
 #endif
