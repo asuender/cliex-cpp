@@ -6,7 +6,8 @@ namespace cliex::exts{
 			static constexpr const char* supexts[]={"mp3","ogg","wav","flac","aac","opus","m4a"};//!< file extensions that can be opened by this extension
 			static constexpr const char* name="CLIAP";
 			CLIAP():
-				BaseExtension(){}
+				BaseExtension(){
+			}
 			void initWin(WINDOW* win){
 				this->win=win;
 			}

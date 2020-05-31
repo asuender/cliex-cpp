@@ -30,17 +30,22 @@ namespace cliex::exts{
 			/**
 			 * Updates the window of the extension
 			 */
-			void updateWin();
+			void updateWin(){
+			}
 			/**
 			 * Callback for when a key gets pressed
 			 * @param key the key that got pressed
 			 */
-			void keyPressCallback(int key);
+			void keyPressCallback(int key){
+				
+			}
 			/**
 			 * Object initializer
 			 * @param fp File path that the extension should open
 			 */
-			BaseExtension();
+			BaseExtension(){
+				
+			}
 	};
 	std::vector<BaseExtension*> extlist={};
 }
