@@ -185,7 +185,7 @@ std::vector<std::string> cliex::get_dir_contents(
     if (!is_directory(dir)) return {};
 
     std::vector<std::string> contents;
-	
+
     for (const fs::path &path : fs::directory_iterator(dir)) {
         std::string filename = path.filename();
         if (filename.at(0) != '.' || show_hidden_files)
