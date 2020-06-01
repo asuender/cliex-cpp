@@ -47,15 +47,16 @@ namespace cliex::exts{
 				
 			}
 	};
-	std::vector<BaseExtension*> extlist={};
 }
 
 //include extensions here
 #include "../src/exts/cliap.cpp"
 
 namespace cliex::exts{
+	std::vector<BaseExtension*> extlist={};
 	void init(){
 		CLIAP cliap;
+		mvaddstr(0,0,cliap.name);
 		extlist.push_back(&cliap);
 	}
 }

@@ -164,23 +164,29 @@ int main(int argc, const char *argv[])
                 !cliex::has_access(resolved_fp)) return;
         
         crext=nullptr;//initialize current extension as a nullpointer
-        const char* fpca=fp.c_str();//file path chararray
-        uint8_t fpcas=sizeof(fpca);//fpca size
-        uint8_t fpcasd;//fpcas difference (difference between fpcas & fes to be precise)
+        const char* fnca=fp.filename().c_str();//file name chararray
+        uint8_t fncas=sizeof(fnca);//fnca size
+        uint8_t fncasd;//fncas difference (difference between fpcas & fes to be precise)
         uint8_t fes;//file extension size
         uint8_t i;//index
+        uint8_t j=0;
     	for(cliex::exts::BaseExtension* ext: cliex::exts::extlist){//check every extension for file compatibility and then set crext
+    		mvwaddstr(explorer_win,j+1,0,ext->name);
+    		j++;
     		for(const char* fe: ext->supexts){
     			fes=sizeof(fe);
-    			fpcasd=fpcas-fes;
-    			if(fpcasd<2)//the first dot isn't present in the exts so there have to be at least 2 additional characters for it to be the extension.
+    			fncasd=fncas-fes;
+    			if(fncasd<2)//the first dot isn't present in the exts so there have to be at least 2 additional characters for it to be the extension.
     				continue;
     			for(i=0;i<fes;i++){
-    				if(fe[i]==fpca[i+fpcasd])
-    					crext=ext;
+    				if(fe[i]!=fnca[i+fncasd]){
+    					break;
+    				}
     			}
-    			if(crext!=nullptr)
+    			if(i==fes){
+    				crext=ext;
     				break;
+    			}
     		}
     		if(crext!=nullptr)
     			break;
