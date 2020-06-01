@@ -54,7 +54,7 @@ std::vector<std::string> cliex::utils::split(const std::string &str) noexcept
             return isspace(c);
         });
         if (it != str.end())
-            result.push_back(std::string(it, jt));
+            result.emplace_back(std::string(it, jt));
         it = jt;
     }
 
