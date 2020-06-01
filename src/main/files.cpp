@@ -185,19 +185,19 @@ std::vector<std::string> cliex::get_dir_contents(
     if (!is_directory(dir)) return {};
 
     std::vector<std::string> contents;
-
+	
     for (const fs::path &path : fs::directory_iterator(dir)) {
         std::string filename = path.filename();
         if (filename.at(0) != '.' || show_hidden_files)
-            contents.emplace_back(filename);
+            contents.push_back(filename);
     }
 
     // sort BEFORE adding "." and ".." so that they will always be the first elements
 
     std::sort(contents.begin(), contents.end());
 
-    if (dir != get_root_path()) contents.emplace(contents.begin(), "..");
-    if (include_current_dir) contents.emplace(contents.begin(), ".");
+    if (dir != get_root_path()) contents.insert(contents.begin(), "..");
+    if (include_current_dir) contents.insert(contents.begin(), ".");
 
     return contents;
 }
